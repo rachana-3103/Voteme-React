@@ -6,8 +6,9 @@ import Login from './pages/Login';
 import Footer from './component/Footer';
 import Content from './pages/Content';
 import Logout from './pages/Logout';
+import SelectCategory from './pages/SelectCategory';
 
-const withHeader = ['/my-profile', '/home', '/my-query', '/terms-condition', '/help', '/createQuery'];
+const withHeader = ['/my-profile', '/home', '/my-query', '/terms-condition', '/help', '/createQuery', '/query'];
 
 const App = () => {
   const location = useLocation();
@@ -20,7 +21,9 @@ const App = () => {
         <Route exact path='/' component={Index} />
         <Route exact path='/login' component={Login} />
         <Route exact path='/logout' component={Logout} />
+        <Route exact path='/addCategory' component={SelectCategory} />
         <Route exact path='/home' component={Content} />
+        <Route exact path='/query' component={Content} />
         <Route exact path='/my-profile' component={Content} />
         <Route exact path='/home' component={Content} />
         <Route exact path='/selectCategory' component={Content} />

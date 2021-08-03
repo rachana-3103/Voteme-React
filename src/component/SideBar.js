@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const SideBar = () => {
+    const [subMenu, setSubMenu] = useState(false);
+    const [query, setQuery] = useState(false);
+
+    const subMenuSet = () => {
+        setSubMenu(subMenu ? false : true);
+    }
+
+    const getQuery = () => {
+        setQuery(true);
+    }
 
     return (
         <div className='left-sidebar'>
@@ -12,16 +22,19 @@ const SideBar = () => {
                             <img className="sidebar-icon hover-icon" src="assets/images/hover-home.svg" alt="" /> Home</Link >
                     </li>
 
-                    <li className={window.location.pathname === "/queries" ? "active" : ""}>
-                        <Link to="/queries"><img className="sidebar-icon" src="assets/images/question-mark.svg" alt="" />
-                            <img className="sidebar-icon hover-icon" src="assets/images/hover-question-mark.svg" alt="" /> Queries</Link>
-                        <ul className="sidebar-submenu">
-                            <li><a href="/my-query">Top 10 Queries</a></li>
-                            <li><a href="/my-query">Recent Queries</a></li>
-                            <li><a href="/my-query">Most Popular Queries</a></li>
-                            <li><a href="/my-query">General</a></li>
-                        </ul>
+                    <li className={window.location.pathname === "/query" ? "active" : ""} onClick={subMenuSet}>
+                        <Link to='#'><img className="sidebar-icon" src="assets/images/question-mark.svg" alt="" />
+                            <img className="sidebar-icon hover-icon" src="assets/images/hover-question-mark.svg" alt="" /> Queries </Link>
+
+                        {subMenu && <ul className="sidebar-submenu">
+                            <li><Link to="/query"><span style={{ fontSize: '12px' }} onClick={getQuery}>Top 10 Queries</span></Link></li>
+                            <li> <Link to="/query"><span style={{ fontSize: '12px' }}>Recent Queries</span></Link></li>
+                            <li><Link to="/query"><span style={{ fontSize: '12px' }}>Most Popular Queries</span></Link></li>
+                            <li><Link to="/query"><span style={{ fontSize: '12px' }}>General</span></Link></li>
+                        </ul>}
                     </li>
+
+
 
                     <li className={window.location.pathname === "/my-query" ? "active" : ""}>
                         <Link to="/my-query"><img className="sidebar-icon" src="assets/images/question-mark.svg" alt="" />

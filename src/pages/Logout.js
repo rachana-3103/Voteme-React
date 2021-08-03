@@ -7,7 +7,7 @@ const Logout = () => {
     useEffect(() => {
         localStorage.clear();
     }, []);
-    ToastMessage('Logout Sucessfully!');
+    ToastMessage('Logout Sucessfully!', true);
     history.push('/login');
     return (
         <div>

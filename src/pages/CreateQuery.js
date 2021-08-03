@@ -4,8 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { useHistory } from "react-router-dom";
 
-const CreateQuery = () => {
-
+const CreateQuery = (props) => {
   const history = useHistory();
   const optionName = ['Option C.', 'Option D.', 'Option E.', 'Option F.'];
 
@@ -19,7 +18,7 @@ const CreateQuery = () => {
     Query: "",
     OptionOne: "",
     OptionTwo: "",
-    ChartOption: "",
+    ChartOption: ['1', '2', '3', '4'],
     IsPublic: "",
     CategoryId: "",
     Category: [],
@@ -33,7 +32,6 @@ const CreateQuery = () => {
     OptionTwoError: '',
     ChartOptionError: '',
     EndDateError: '',
-    // CategoryError: ''
   });
 
   const [category, setCategory] = useState([]);
@@ -44,8 +42,19 @@ const CreateQuery = () => {
     const userInfo = AuthData();
     let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
     setUser(result.data.Data);
-    const categoryData = await axios.get(`http://localhost:3000/voteme/category`, { headers: userInfo.header });
+
+    const categoryData = await axios.get(`http://localhost:8080/voteme/category`, { headers: userInfo.header });
     setCategory(categoryData.data.Data);
+
+    if (props.edit && props.queryId) {
+      const getQuery = await axios.get(`http://localhost:8080/voteme/querydetail/${props.queryId}`, { headers: userInfo.header });
+      setQuery({
+        Query: getQuery.data.Data.Query,
+        OptionOne: getQuery.data.Data.Options[0].Answer,
+        OptionTwo: getQuery.data.Data.Options[1].Answer,
+        ChartOption: getQuery.data.Data.ChartOption,
+      });
+    }
   };
 
   useEffect(() => {
@@ -74,7 +83,6 @@ const CreateQuery = () => {
     values.splice(i, 1);
     setFields(values);
   }
-
 
   const { Query, OptionOne, OptionTwo, ChartOption, Category, IsPublic, EndDate } = query;
   const { QueryError, OptionOneError, OptionTwoError, ChartOptionError, EndDateError } = error;
@@ -126,7 +134,6 @@ const CreateQuery = () => {
   }
 
 
-
   const queryOnSubmit = async (e) => {
     e.preventDefault();
     const isValid = formValidate();
@@ -157,9 +164,15 @@ const CreateQuery = () => {
       Object.assign(userInfo.header, {
         "Content-Type": 'multipart/form-data'
       });
-
-      const apiUrl = 'http://localhost:3000/voteme/createpoll'
-      await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
+      let apiUrl;
+      if (props.edit && props.queryId) {
+        console.log('edit query ..........');
+        apiUrl = `http://localhost:8080//voteme/editquery/${props.queryId}`;
+        await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
+      } else {
+        apiUrl = 'http://localhost:8080/voteme/createpoll';
+        await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
+      }
       history.push("/home");
     }
   }
@@ -222,20 +235,31 @@ const CreateQuery = () => {
         <div className="chart-type">
           <div className="section-title">Representation of your results</div>
           <div className="custom-select-box">
+            {/* {query && query.ChartOption === ChartOption[0] ? */}
             <div className="select-box-inner">
-              <input id="text" name="ChartOption" value={1} type="radio" onChange={(e) => onInputChange(e)} />
+              {/* {console.log(ChartOption, ';;;;;;;;;;')} */}
+              {/* (<input id="text" name="ChartOption" value={ChartOption[0]} type="radio" onChange={(e) => onInputChange(e)} />
+                <label htmlFor="text"><img src="assets/images/bar-chart.jpg" alt="" /><span >Bar Chart</span></label> </div>) :
+
+            (<div className="select-box-inner">
+              <input id="text" name="ChartOption" value={ChartOption[0]} type="radio" onChange={(e) => onInputChange(e)} />
+              <label htmlFor="text"><img src="assets/images/bar-chart.jpg" alt="" /><span >Bar Chart</span></label>
+            </div>
+
+            ))} */}
+              <input id="text" name="ChartOption" value={ChartOption[0]} type="radio" onChange={(e) => onInputChange(e)} />
               <label htmlFor="text"><img src="assets/images/bar-chart.jpg" alt="" /><span >Bar Chart</span></label>
             </div>
             <div className="select-box-inner">
-              <input id="image" name="ChartOption" value={2} type="radio" onChange={(e) => onInputChange(e)} />
+              <input id="image" name="ChartOption" value={ChartOption[1]} type="radio" onChange={(e) => onInputChange(e)} />
               <label htmlFor="image"><img src="assets/images/pie-chart.png" alt="" /><span>Pie Chart</span></label>
             </div>
             <div className="select-box-inner">
-              <input id="audio" name="ChartOption" value={3} type="radio" onChange={(e) => onInputChange(e)} />
+              <input id="audio" name="ChartOption" value={ChartOption[2]} type="radio" onChange={(e) => onInputChange(e)} />
               <label htmlFor="audio"><img src="assets/images/lin-chart.jpg" alt="" /><span>Line Chart</span></label>
             </div>
             <div className="select-box-inner">
-              <input id="video" name="ChartOption" value={4} type="radio" onChange={(e) => onInputChange(e)} />
+              <input id="video" name="ChartOption" value={ChartOption[3]} type="radio" onChange={(e) => onInputChange(e)} />
               <label htmlFor="video"><img src="assets/images/donut-chart.png" alt="" /><span>Donut Chart</span></label>
             </div>
           </div>
@@ -267,14 +291,14 @@ const CreateQuery = () => {
           <h2 className="section-title">What are your interests?</h2>
           <div className="category-cover">
             {category.map((e) => (
-              <div className="category-list" style={{ backgroundImage: 'url("assets/images/Astrogoy_200x200.jpg")' }}>
+              <div className="category-list" style={{ backgroundImage: 'url("assets/images/Astrogoy_200x200.jpg")', position: 'relative' }}>
                 <input type="checkbox" name="CategoryId" value={e._id} onChange={(e) => selectCategory(e)} />
                 <label><span>{e.CategoryName}</span></label>
               </div>
             ))}
           </div>
         </div>
-        <div className="submit-btn">
+        <div className="submit-btn" style={{ marginLeft: '40%' }}>
           <button type="submit">Submit</button>
         </div>
       </form>

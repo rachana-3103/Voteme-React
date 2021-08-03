@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AuthData } from "../helper/AuthData";
+import CreateQuery from "./CreateQuery";
 
 const MyQuery = () => {
   const [query, setQuery] = useState([]);
+  const [editFlag, setEditFlag] = useState(false);
+  const [queryId, setQueryId] = useState();
 
   useEffect(() => {
     loadMyQuery();
@@ -11,15 +14,21 @@ const MyQuery = () => {
 
   const loadMyQuery = async () => {
     const userInfo = AuthData();
-    let queryData = await axios.get(`http://localhost:3000/voteme/myquery`, {
+    let queryData = await axios.get(`http://localhost:8080/voteme/myquery`, {
       headers: userInfo.header,
     });
     setQuery(queryData.data.Data[0].Records);
   };
 
+  const editQuery = (editFlag, queryId) => {
+    setEditFlag(editFlag);
+    setQueryId(queryId);
+  }
+
   return (
     <div className="my-queries">
-      <div className="query-tabing">
+      {editFlag && <CreateQuery edit={editFlag} queryId={queryId} />}
+      {!editFlag && <div className="query-tabing">
         <div className="tab-listing">
           <ul className="tabbing-nav">
             <li className="active-tab">
@@ -40,7 +49,7 @@ const MyQuery = () => {
           <div id="recent-queries" className="tab-content">
             {query.length > 0 ? (
               query.map((queryData) => (
-                <div className="tab-content-list">
+                <div className="tab-content-list" >
                   <div className="query-info-box">
                     <div className="query-head flex-box">
                       <span className="profile-img">
@@ -107,15 +116,12 @@ const MyQuery = () => {
                         <span className="viewers">
                           <img src="assets/images/view-outline.svg" alt="" /> {queryData.TotalViews}
                         </span>
-                        {/* <span className="share">
-                          <img src="assets/images/share-outline.svg" alt="" /> 50
-                        </span> */}
                       </div>
                       <div className="poll-end-time">
                         Pole End Time {queryData.EndDate}
                       </div>
                       <div className="query-cta-btns">
-                        <span className="edit">
+                        <span className="edit" onClick={() => editQuery(true, queryData._id)}>
                           <img src="assets/images/edit.svg" alt="" />
                         </span>
                         <span className="delete">
@@ -135,8 +141,7 @@ const MyQuery = () => {
                 </div>)}
           </div>
         </div>
-      </div>
-
+      </div>}
     </div >
   );
 };

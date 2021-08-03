@@ -75,7 +75,7 @@ const MyProfile = () => {
               <div className="browse-img">
                 <input type="file" name={Image} />
                 <label>
-                  <img src="assets/images/edit_icon.svg" alt="" />
+                  {/* <img src="assets/images/edit_icon.svg" alt="" /> */}
                 </label>
               </div>
             </div>

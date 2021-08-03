@@ -6,9 +6,10 @@ export const AuthData = () => {
         Authorization: `Bearer ${token}`,
         Accept: "*/*",
     };
-    const apiUrl = `http://localhost:3000/voteme/${id}/profile`;
+    const apiUrl = `http://localhost:8080/voteme/${id}/profile`;
     return {
         header,
-        apiUrl
+        apiUrl,
+        id
     }
 }

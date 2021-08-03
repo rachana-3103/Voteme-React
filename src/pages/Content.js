@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SideBar from '../component/SideBar';
 import { Switch, Route, useLocation } from 'react-router-dom';
 import MyProfile from '../pages/MyProfile';
@@ -9,16 +9,21 @@ import Help from '../pages/Help'
 import CreateQuery from '../pages/CreateQuery';
 import Category from './Category';
 import SelectCategory from './SelectCategory';
-const withHeader = ['/my-profile', '/home', '/my-query', '/terms-condition', '/help', '/createQuery'];
+import AllQuery from './AllQuery';
+const withHeader = ['/my-profile', '/home', '/my-query', '/terms-condition', '/help', '/createQuery', '/query'];
 
 const Content = () => {
     const location = useLocation();
+    const [category, setCategory] = useState(true);
+    const categoryShowHide = (value) => {
+        setCategory(value);
+    };
     return (
         <div>
             <section className="query-banner-img">
                 <div className="container">
                     {
-                        location.pathname === '/home' && <Category />
+                        location.pathname === '/home' && category === true && <Category />
                     }
                     <div className="query-inner d-flex">
                         {
@@ -28,7 +33,8 @@ const Content = () => {
                             <Switch>
                                 <Route exact path='/createQuery' component={CreateQuery} />
                                 <Route exact path='/my-profile' component={MyProfile} />
-                                <Route exact path='/home' component={Home} />
+                                <Route exact path='/query' component={AllQuery} />
+                                <Route exact path='/home' render={(props) => <Home {...props} category={categoryShowHide} />} />
                                 <Route exact path='/my-query' component={MyQuery} />
                                 <Route exact path='/selectCategory' component={SelectCategory} />
                                 <Route exact path='/terms-condition' component={TermsCondition} />

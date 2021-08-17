@@ -1,60 +1,81 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
+import { Link, useLocation } from 'react-router-dom';
+import { AuthData } from '../helper/AuthData';
 
 const AllQuery = () => {
+    const location = useLocation();
+    const userInfo = AuthData();
+    const { id } = useParams();
+    const [query, setQuery] = useState([]);
+    useEffect(() => {
+        loadQuery();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const loadQuery = async () => {
+        const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=${id}`, { headers: userInfo.header })
+        setQuery(query.data.Data[0].Records);
+    }
+
     return (
         <div>
-            <div class="my-queries">
-                <div class="query-tabing">
-                    <div class="tab-listing">
-                        <ul class="tabbing-nav">
-                            <li class="active-tab"><a href="/abc">Recent Queries</a></li>
-                            <li><a href="/abc">Top 10 Queries</a></li>
-                            <li><a href="/abc">Popular Queries</a></li>
-                            <li><a href="/abc">All Queries</a></li>
+            <div className="my-queries">
+                <div className="query-tabing">
+                    <div className="tab-listing">
+                        <ul className="tabbing-nav">
+                            <li className={location.pathname === "/query/1" ? "active-tab" : ""}><Link to="/query/1">All Queries</Link></li>
+                            <li className={location.pathname === "/query/2" ? "active-tab" : ""}><Link to="/query/2" >Recent Queries</Link></li>
+                            <li className={location.pathname === "/query/3" ? "active-tab" : ""}><Link to="/query/3" >Top 10 Queries</Link></li>
+                            <li className={location.pathname === "/query/4" ? "active-tab" : ""}><Link to="/query/4" >Popular Queries</Link></li>
                         </ul>
                     </div>
-                    <div class="tabs-content-cover">
-                        <div id="recent-queries" class="tab-content">
-                            <div class="tab-content-list">
-                                <div class="query-info-box">
-                                    <div class="query-head flex-box">
-                                        <span class="profile-img"><img src="assets/images/user-placeholder-img.jpg" alt="" /></span>
-                                        <div class="about-query-info">
-                                            <div class="small-title">John Doe</div>
-                                            <div class="query-shared-by">Visiting & Travel, World History, Travel Tips</div>
+                    <div className="tabs-content-cover">
+                        <div id="recent-queries" className="tab-content">
+                            {console.log(query)}
+                            {query.map((queryObj) => (
+                                <div className="tab-content-list">
+                                    <div className="query-info-box">
+                                        <div className="query-head flex-box">
+                                            <span className="profile-img"><img src={queryObj.UserDetails[0].Image} alt="" /></span>
+                                            <div className="about-query-info">
+                                                <div className="small-title">{queryObj.UserDetails[0].FirstName} {queryObj.UserDetails[0].LastName}</div>
+                                                <div className="query-shared-by">{queryObj.Category.join()}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="query-desc">
-                                        <h2 class="small-title">Which is place better than Taj Mahal you felt worth to visit in India?</h2>
-                                        <ul class="query-options">
-                                            <li>A. Ram Setu <span class="opt-a"><span class="graph-line"></span>70%</span></li>
-                                            <li>B. Red Fort Delhi <span class="opt-b"><span class="graph-line"></span>15%</span></li>
-                                            <li>C. Ganga River <span class="opt-c"><span class="graph-line"></span>10%</span></li>
-                                            <li>D. Dwarka <span class="opt-d"><span class="graph-line"></span>05%</span></li>
-                                        </ul>
-                                    </div>
-                                    <div class="query-footer flex-box">
-                                        <div class="vote-count">20 Votes</div>
-                                        <div class="bottom-right-options">
-                                            <span class="like"><img class="outline-icon" src="assets/images/up-arrow-outline.svg" alt="" />
-                                                <img class="fill-icon" src="assets/images/up-arrow-fill.svg" alt="" /> 50</span>
-                                            <span class="dislike"><img class="outline-icon" src="assets/images/down-arrow-outline.svg" alt="" />
-                                                <img class="fill-icon" src="assets/images/down-arrow-fill.svg" alt="" /> 50</span>
-                                            <span class="comments"><img src="assets/images/speech-bubble-outline.svg" alt="" /> 50</span>
-                                            <span class="viewers"><img src="assets/images/view-outline.svg" alt="" /> 50</span>
-                                            <span class="share"><img src="assets/images/share-outline.svg" alt="" /> 50</span>
+                                        <div className="query-desc">
+                                            <h2 className="small-title">{queryObj.Query}</h2>
+                                            <ul className="query-options">
+                                                {queryObj.Options[0].Options.map((option) => (
+                                                    <li>{option.Key}. {option.Answer} <span className="opt-a"><span className="graph-line"></span>{option.Percentage}%</span></li>
+                                                ))}
+                                            </ul>
                                         </div>
+                                        <div className="query-footer flex-box">
+                                            <div className="vote-count">{queryObj.TotalVotes} Votes</div>
+                                            <div className="bottom-right-options">
+                                                <span className="like">
+                                                    <img className="outline-icon" src="assets/images/up-arrow-outline.svg" alt="" />
+                                                    <img className="fill-icon" src="assets/images/up-arrow-fill.svg" alt="" />{queryObj.TotalLikes}</span>
+                                                <span className="dislike">
+                                                    <img className="outline-icon" src="assets/images/down-arrow-outline.svg" alt="" />
+                                                    <img className="fill-icon" src="assets/images/down-arrow-fill.svg" alt="" /> {queryObj.TotalDisLikes}</span>
+                                                <span className="comments"><img src="assets/images/speech-bubble-outline.svg" alt="" />{queryObj.TotalComments}</span>
+                                                <span className="viewers"><img src="assets/images/view-outline.svg" alt="" />{queryObj.TotalViews}</span>
+                                            </div>
+                                        </div>
+                                        <div className="poll-end-time">Pole End Time {queryObj.EndDate}</div>
                                     </div>
-                                    <div class="poll-end-time">Pole End Time 30/09/2020 00:00AM</div>
+                                    <div className="poll-end-time poll-ended">Poll Ended</div>
                                 </div>
-                                <div class="poll-end-time poll-ended">Poll Ended</div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-            );
+    );
 }
 
-            export default AllQuery;
+export default AllQuery;

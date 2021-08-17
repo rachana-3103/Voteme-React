@@ -10,7 +10,8 @@ import CreateQuery from '../pages/CreateQuery';
 import Category from './Category';
 import SelectCategory from './SelectCategory';
 import AllQuery from './AllQuery';
-const withHeader = ['/my-profile', '/home', '/my-query', '/terms-condition', '/help', '/createQuery', '/query'];
+const withHeader = ['/my-profile', '/home', '/my-query', '/terms-condition',
+    '/help', '/createQuery', '/query/1', '/query/2', '/query/3', '/query/4'];
 
 const Content = () => {
     const location = useLocation();
@@ -33,7 +34,7 @@ const Content = () => {
                             <Switch>
                                 <Route exact path='/createQuery' component={CreateQuery} />
                                 <Route exact path='/my-profile' component={MyProfile} />
-                                <Route exact path='/query' component={AllQuery} />
+                                <Route exact path="/query/:id" component={AllQuery} />
                                 <Route exact path='/home' render={(props) => <Home {...props} category={categoryShowHide} />} />
                                 <Route exact path='/my-query' component={MyQuery} />
                                 <Route exact path='/selectCategory' component={SelectCategory} />

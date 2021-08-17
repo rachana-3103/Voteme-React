@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import ToastMessage from '../helper/ToastMessage';
 import QueryDetails from './QueryDetails';
+import moment from 'moment';
 
 const Home = (props) => {
     const history = useHistory();
@@ -22,6 +23,7 @@ const Home = (props) => {
 
     useEffect(() => {
         loadUserAndAllQuery();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadUserAndAllQuery = async () => {
@@ -65,7 +67,8 @@ const Home = (props) => {
         }
     }
 
-    const getQueryId = (queryId) => {
+    const getQueryId = async (queryId) => {
+        await axios.get(`http://localhost:8080/voteme/${queryId}/queryview/${userInfo.id}`, { headers: userInfo.header });
         queryId ? props.category(false) : props.category(true);
         setQueryId(queryId);
     }
@@ -96,9 +99,8 @@ const Home = (props) => {
                                                         <span className="profile-img"><img src={queryData.UserDetails[0].Image} alt="" /></span>
                                                         <div className="about-query-info">
                                                             <div className="small-title">{queryData.UserDetails[0].FirstName} {queryData.UserDetails[0].LastName}</div>
-                                                            {queryData.Category.map((category) => (
-                                                                <div className="query-shared-by">{category}</div>
-                                                            ))}
+                                                            <div className="query-shared-by">
+                                                                {queryData.Category.join()}</div>
                                                         </div>
                                                     </div>
                                                     <div className="query-desc">
@@ -127,8 +129,8 @@ const Home = (props) => {
                                                             <span className="viewers"><img src="assets/images/view-outline.svg" alt="" /> {queryData.TotalViews}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="poll-end-time">Will be end within 2 Days</div>
-                                                    <div className="right-vote-info">20 Votes</div>
+                                                    <div className="poll-end-time">Poll End Date {queryData.EndDate}</div>
+                                                    <div className="right-vote-info">{queryData.TotalVotes} Votes</div>
                                                 </div>
                                             ))}
                                         </div>

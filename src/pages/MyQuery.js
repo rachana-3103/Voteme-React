@@ -59,9 +59,7 @@ const MyQuery = () => {
                         <div className="small-title" style={{ fontSize: '15px' }}>
                           {queryData.UserDetails[0].FirstName} {queryData.UserDetails[0].LastName}
                         </div>
-                        {queryData.Category.map((category) => (
-                          <div className="query-shared-by">{category}</div>
-                        ))}
+                        <div className="query-shared-by">{queryData.Category.join()}</div>
                       </div>
                     </div>
                     <div className="query-desc">

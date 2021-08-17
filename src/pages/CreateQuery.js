@@ -59,6 +59,7 @@ const CreateQuery = (props) => {
 
   useEffect(() => {
     loadUserAndCategory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectCategory = (e) => {
@@ -152,8 +153,6 @@ const CreateQuery = (props) => {
         'Category': Category,
         'OptionType': 1
       };
-      console.log(queryObj, '...................obj');
-
       for (const key in queryObj) {
         if (key === 'EndDate') {
           queryObj[key] = moment(queryObj.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY hh:mm A')
@@ -289,9 +288,15 @@ const CreateQuery = (props) => {
         ) : null}
         <div className="select-category">
           <h2 className="section-title">What are your interests?</h2>
-          <div className="category-cover">
+          <div className="category-cover" style={{
+            display: 'grid',
+            gridTemplateColumns: 'auto auto auto auto',
+            width: "70%",
+            marginLeft: '30px',
+            marginBottom: '50px'
+          }}>
             {category.map((e) => (
-              <div className="category-list" style={{ backgroundImage: 'url("assets/images/Astrogoy_200x200.jpg")', position: 'relative' }}>
+              <div className="category-list" style={{ backgroundImage: `url(${e.Image})`, width: '107px' }}>
                 <input type="checkbox" name="CategoryId" value={e._id} onChange={(e) => selectCategory(e)} />
                 <label><span>{e.CategoryName}</span></label>
               </div>

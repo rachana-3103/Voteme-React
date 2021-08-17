@@ -18,9 +18,9 @@ const Home = () => {
                             </div>
                             <ul className="nav">
                                 <li className="active"><a href="!#">Home</a></li>
-                                <li><a href="!#">About</a></li>
-                                <li><a href="!#">How it works</a></li>
-                                <li><a href="!#">Contact Us</a></li>
+                                <li><a href="#about-us">About</a></li>
+                                <li><a href="#how-it-works">How it works</a></li>
+                                <li><a href="#get-in-touch">Contact Us</a></li>
                             </ul>
                         </div>
                         <div className="header-right">
@@ -197,7 +197,7 @@ const Home = () => {
                             </div>
                         </div>
                         <div className="c-form col-6">
-                            <form>
+                            <form style={{ marginLeft: '30px' }}>
                                 <div className="form-field"><input className="form-control" type="text" placeholder="Your name" name="" /></div>
                                 <div className="form-field"><input className="form-control" type="text" placeholder="Your email" name="" /></div>
                                 <div className="form-field"><input className="form-control" type="text" placeholder="Your subject" name="" /></div>

@@ -27,12 +27,17 @@ const QueryDetails = (props) => {
 
     useEffect(() => {
         getQueryByQueryId();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onVoted = (option, optionId, userId, queryId) => {
         const vote = { voted: true, option, optionId, userId, queryId };
         setVoted(vote);
     }
+    const categoryArray = [];
+    query.Category.forEach((category) => {
+        categoryArray.push(category.CategoryName);
+    });
 
     return (
         <div className="my-queries query-details-page">
@@ -45,9 +50,7 @@ const QueryDetails = (props) => {
                     <span className="profile-img"><img src={query.UserDetails.Image} alt="" /></span>
                     <div className="about-query-info">
                         <div className="small-title">{query.UserDetails.FirstName} {query.UserDetails.LastName}<span className="credential-info">Engineer .</span></div>
-                        {query.Category.map((category) => (
-                            <div className="query-shared-by">{category.CategoryName}</div>
-                        ))}
+                        <div className="query-shared-by">{categoryArray.join()}</div>
                     </div>
                 </div>
                 <div className="query-desc">

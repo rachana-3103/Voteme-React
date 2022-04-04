@@ -17,8 +17,10 @@ const Header = () => {
 
     const loadUser = async () => {
         const userInfo = AuthData();
-        let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
-        setUser(result.data.Data);
+        if(userInfo !== null){
+            let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
+            setUser(result.data.Data);
+        }
     };
     return (
         <div>
@@ -35,7 +37,9 @@ const Header = () => {
                                 <div className="three"></div>
                             </div>
                             <ul className="nav">
-                                <li className="active"><a href="/abc">Home</a></li>
+                                <li
+                                //  className="active"
+                                ><a href="/abc">Home</a></li>
                                 <li><a href="/abc">About</a></li>
                                 <li><a href="/abc">Notifications</a></li>
                                 <li><a href="/abc">Contact Us</a></li>

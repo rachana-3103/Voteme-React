@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { AuthData } from "../helper/AuthData";
 
 const MyProfile = () => {
-  const history = useHistory();
-
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     FirstName: "",
     LastName: "",
@@ -55,12 +54,11 @@ const MyProfile = () => {
       }
       bodyFormData.append(key, userObj[key]);
     }
-    console.log(bodyFormData, '................form data');
     Object.assign(userInfo.header, {
       "Content-Type": 'multipart/form-data'
     });
     await axios.put(userInfo.apiUrl, bodyFormData, { headers: userInfo.header });
-    history.push("/home");
+    navigate("/home");
   };
 
   return (
@@ -101,7 +99,7 @@ const MyProfile = () => {
                       name="FirstName"
                       value={FirstName}
                       onChange={(e) => onInputChange(e)}
-                    />
+                    /> &nbsp;&nbsp;
                     <input
                       type="text"
                       name="LastName"

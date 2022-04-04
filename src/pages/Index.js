@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-const Home = () => {
+import Layout from '../component/Layout'
+const Index = () => {
     return (
-        <div>
+        <Layout>
+            <div>
             <header>
                 <div className="container">
                     <div className="header-inner">
@@ -208,8 +209,9 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-        </div>
+            </div>
+        </Layout>
     );
 }
 
-export default Home;
+export default Index;

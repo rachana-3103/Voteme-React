@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthData } from '../helper/AuthData';
-import Voted from './Voted';
 
-const QueryDetails = (props) => {
+const QueryEndDetails = (props) => {
     const userInfo = AuthData();
     const [query, setQuery] = useState({
         UserDetails: "",
@@ -11,17 +10,8 @@ const QueryDetails = (props) => {
         Options: [],
     });
 
-    const [voted, setVoted] = useState({
-        voted: false,
-        option: "",
-        optionId: "",
-        userId: "",
-        queryId: ""
-    });
-
     const getQueryByQueryId = async () => {
-        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.data._id}`, { headers: userInfo.header });
-        console.log(queryObj,'...............obj');
+        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.queryId}`, { headers: userInfo.header });
         setQuery(queryObj.data.Data);
     }
 
@@ -29,18 +19,13 @@ const QueryDetails = (props) => {
         getQueryByQueryId();
     }, []);
 
-    const onVoted = (option, optionId, userId, queryId) => {
-        const vote = { voted: true, option, optionId, userId, queryId };
-        setVoted(vote);
-    }
     const categoryArray = [];
-    // query.Category.forEach((category) => {
-    //     categoryArray.push(category.CategoryName);
-    // });
+    query.Category.forEach((category) => {
+        categoryArray.push(category.CategoryName);
+    });
 
     return (
         <div className="my-queries query-details-page">
-            <Voted voted={voted} close={() => setVoted(false)} />
             <h1 className="right-container-title" style={{ marginLeft: '15px' }}>Query Details</h1>
             <div className="query-info-box">
                 <div className="query-head flex-box">
@@ -53,21 +38,20 @@ const QueryDetails = (props) => {
                 <div className="query-desc">
                     <h2 className="small-title">{query.Query}</h2>
                     <div className="query-chart">
-                        <div className="custom-select-box voting-box-show">
-                            {console.log(query,'......................mmmmmm')}
-                            {query.Options.map((option) => (
-                                <div className="select-box-inner select-text">
-                                    <div className="select-box-main">
-                                        <div className="d-flex">
-                                            <span className="query-dec-text">{option.Answer}</span>
-                                            <div className="click-to-vote-btn"><img src="assets/images/search-plus.svg" alt="" />
-                                                <button type="button vote" onClick={() =>
-                                                    onVoted(option.Answer, option._id, userInfo.id, query.QueryId)}>Click to Vote</button>
-                                            </div>
+                        <div class="voting-chart-cover">
+                            <div class="chart-img">
+                                <img src="assets/images/chart-img.png" alt="" />
+                            </div>
+                            <div className="custom-select-box voting-box-show">
+                                {query.Options.map((option) => (
+                                    <div class="select-box-inner select-text">
+                                        <div class="select-box-main voted">
+                                            <div class="vote-count-box">{option.NumberOfVotes} Votes</div>
+                                            <div class="d-flex"><span class="qry-opt">{option.Key}.</span><span>{option.Answer}</span></div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <div className="bottom-right-options">
@@ -79,7 +63,7 @@ const QueryDetails = (props) => {
                         <span className="viewers"><img src="assets/images/view-outline.svg" alt="" /> {query.TotalViews}</span>
                     </div>
                 </div>
-                <div className="poll-end-time">Pole End Time {query.EndDate}</div>
+                <div class="poll-end-time poll-ended">Poll Ended</div>
                 <div className="right-vote-info">{query.TotalVotes} Votes</div>
                 <div className="coment-section">
                     <div className="comment-section-inner flex-box">
@@ -121,9 +105,9 @@ const QueryDetails = (props) => {
                         </div>
                     </div>
                 </div >
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }
 
-export default QueryDetails;
+export default QueryEndDetails;

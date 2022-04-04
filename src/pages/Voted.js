@@ -1,10 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal } from 'reactstrap';
 import { AuthData } from '../helper/AuthData';
 import ToastMessage from '../helper/ToastMessage';
 
 const Voted = (props) => {
+    const navigate =  useNavigate();
     const userInfo = AuthData();
     const {
         voted,
@@ -17,17 +19,21 @@ const Voted = (props) => {
     const [modal, setModal] = useState(false);
     const [voteSuccess, setVoteSucess] = useState(false);
 
-    const toggle = () => setModal(!modal);
+   const toggle = () => setModal(!modal);
 
     const onVoted = async (userId, queryId, optionId) => {
-
         const body = { UserID: userId, QueryId: queryId, OptionId: optionId };
         const giveVote = await axios.post('http://localhost:8080/voteme/givevote', body, { headers: userInfo.header });
+
         if (giveVote.data.Error) {
             ToastMessage(giveVote.data.Error.Message, false);
         } else {
             setVoteSucess(true);
         }
+    }
+    const CloseVote =  () => {
+        // props.close()
+        navigate('/home');
     }
 
     return (
@@ -50,7 +56,7 @@ const Voted = (props) => {
             {voteSuccess &&
                 <Modal isOpen={voted} toggle={props.close} style={{ top: '15%', position: 'relative' }}>
                     <img src='assets/images/voted.gif' alt="" style={{ position: 'absolute', width: '100%', height: '100%' }} />
-                    <div className="detete-opt"><span className="delete" style={{ color: 'black' }} onClick={() => { setVoteSucess(false); props.close() }}>X</span></div>
+                    <div className="detete-opt"><span className="delete" style={{ color: 'black' }} onClick={CloseVote}>X</span></div>
                     <div style={{ display: 'flex', justifyContent: 'center', height: '300px', alignItems: 'center' }}>
                         <span style={{ fontSize: '35px', fontFamily: 'Sans-serif', color: 'cadetblue' }}>Voted Successfully!!</span></div>
                 </Modal>

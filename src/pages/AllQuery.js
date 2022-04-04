@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthData } from '../helper/AuthData';
 
@@ -8,6 +8,7 @@ const AllQuery = () => {
     const location = useLocation();
     const userInfo = AuthData();
     const { id } = useParams();
+    let percentage = 0;
     const [query, setQuery] = useState([]);
     useEffect(() => {
         loadQuery();
@@ -25,15 +26,14 @@ const AllQuery = () => {
                 <div className="query-tabing">
                     <div className="tab-listing">
                         <ul className="tabbing-nav">
-                            <li className={location.pathname === "/query/1" ? "active-tab" : ""}><Link to="/query/1">All Queries</Link></li>
-                            <li className={location.pathname === "/query/2" ? "active-tab" : ""}><Link to="/query/2" >Recent Queries</Link></li>
-                            <li className={location.pathname === "/query/3" ? "active-tab" : ""}><Link to="/query/3" >Top 10 Queries</Link></li>
-                            <li className={location.pathname === "/query/4" ? "active-tab" : ""}><Link to="/query/4" >Popular Queries</Link></li>
+                            <li className={location.pathname === "/query/1" ? "active-tab" : ""}><Link to={`/query/${1}`}>All Queries</Link></li>
+                            <li className={location.pathname === "/query/2" ? "active-tab" : ""}><Link to={`/query/${2}`} >Recent Queries</Link></li>
+                            <li className={location.pathname === "/query/3" ? "active-tab" : ""}><Link to={`/query/${3}`}>Top 10 Queries</Link></li>
+                            <li className={location.pathname === "/query/4" ? "active-tab" : ""}><Link to={`/query/${4}`} >Popular Queries</Link></li>
                         </ul>
                     </div>
                     <div className="tabs-content-cover">
                         <div id="recent-queries" className="tab-content">
-                            {console.log(query)}
                             {query.map((queryObj) => (
                                 <div className="tab-content-list">
                                     <div className="query-info-box">
@@ -48,7 +48,15 @@ const AllQuery = () => {
                                             <h2 className="small-title">{queryObj.Query}</h2>
                                             <ul className="query-options">
                                                 {queryObj.Options[0].Options.map((option) => (
-                                                    <li>{option.Key}. {option.Answer} <span className="opt-a"><span className="graph-line"></span>{option.Percentage}%</span></li>
+                                                    <li>{option.Key}. {option.Answer}
+                                                        {option.Percentage === null ?
+                                                            (<span className="opt-a">
+                                                                <span className="graph-line"></span> {percentage} %
+                                                            </span>) :
+                                                            (<span className="opt-a">
+                                                                <span className="graph-line"></span> {option.Percentage} %
+                                                            </span>)}
+                                                    </li>
                                                 ))}
                                             </ul>
                                         </div>

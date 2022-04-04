@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { AuthData } from '../helper/AuthData';
 import axios from 'axios';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SelectCategory = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const userInfo = AuthData();
     const [category, setCategory] = useState([]);
     const [userCategory, setUserCategory] = useState([]);
@@ -40,7 +40,7 @@ const SelectCategory = () => {
         e.preventDefault();
         const body = { Category: userCategory };
         await axios.put(`http://localhost:8080/voteme/updateusercategory`, body, { headers: userInfo.header });
-        history.push("/home");
+        navigate("/home");
     }
 
     return (

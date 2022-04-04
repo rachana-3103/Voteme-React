@@ -1,37 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { AuthData } from "../helper/AuthData";
-import axios from 'axios';
-import moment from 'moment';
-import { useHistory } from "react-router-dom";
+import axios from "axios";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const CreateQuery = (props) => {
-  const history = useHistory();
-  const optionName = ['Option C.', 'Option D.', 'Option E.', 'Option F.'];
+  const navigate = useNavigate();
+  const optionName = ["Option C.", "Option D.", "Option E.", "Option F."];
+  const userInfo = AuthData();
 
   const [user, setUser] = useState({
     FirstName: "",
     LastName: "",
-    Image: ""
+    Image: "",
   });
-
   const [query, setQuery] = useState({
     Query: "",
     OptionOne: "",
     OptionTwo: "",
-    ChartOption: ['1', '2', '3', '4'],
+    OptionThree: "",
+    OptionFour: "",
+    OptionFive: "",
+    OptionSix: "",
+    ChartOption: ["1", "2", "3", "4"],
     IsPublic: "",
     CategoryId: "",
     Category: [],
     EndDate: "",
   });
 
-
   const [error, setError] = useState({
-    QueryError: '',
-    OptionOneError: '',
-    OptionTwoError: '',
-    ChartOptionError: '',
-    EndDateError: '',
+    QueryError: "",
+    OptionOneError: "",
+    OptionTwoError: "",
+    ChartOptionError: "",
+    EndDateError: "",
   });
 
   const [category, setCategory] = useState([]);
@@ -39,15 +42,20 @@ const CreateQuery = (props) => {
   const { FirstName, LastName, Image } = user;
 
   const loadUserAndCategory = async () => {
-    const userInfo = AuthData();
     let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
     setUser(result.data.Data);
 
-    const categoryData = await axios.get(`http://localhost:8080/voteme/category`, { headers: userInfo.header });
+    const categoryData = await axios.get(
+      `http://localhost:8080/voteme/category`,
+      { headers: userInfo.header }
+    );
     setCategory(categoryData.data.Data);
 
     if (props.edit && props.queryId) {
-      const getQuery = await axios.get(`http://localhost:8080/voteme/querydetail/${props.queryId}`, { headers: userInfo.header });
+      const getQuery = await axios.get(
+        `http://localhost:8080/voteme/querydetail/${props.queryId}`,
+        { headers: userInfo.header }
+      );
       setQuery({
         Query: getQuery.data.Data.Query,
         OptionOne: getQuery.data.Data.Options[0].Answer,
@@ -59,56 +67,76 @@ const CreateQuery = (props) => {
 
   useEffect(() => {
     loadUserAndCategory();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectCategory = (e) => {
     const category = [...query.Category];
     category.push(e.target.value);
     setQuery({ ...query, Category: category });
-  }
+  };
 
   const onInputChange = (e) => {
     setQuery({ ...query, [e.target.name]: e.target.value });
-  }
+  };
 
   const optionAdd = () => {
     const values = [...fields];
     const label = optionName[fields.length];
     values.push({ value: null, label });
     setFields(values);
-  }
+  };
 
   const optionRemove = (i) => {
     const values = [...fields];
     values.splice(i, 1);
     setFields(values);
-  }
+  };
 
-  const { Query, OptionOne, OptionTwo, ChartOption, Category, IsPublic, EndDate } = query;
-  const { QueryError, OptionOneError, OptionTwoError, ChartOptionError, EndDateError } = error;
+  const {
+    Query,
+    OptionOne,
+    OptionTwo,
+    ChartOption,
+    Category,
+    IsPublic,
+    EndDate,
+  } = query;
+  const {
+    QueryError,
+    OptionOneError,
+    OptionTwoError,
+    ChartOptionError,
+    EndDateError,
+  } = error;
 
   const formValidate = () => {
-    let QueryError = '';
-    let OptionOneError = '';
-    let OptionTwoError = '';
-    let ChartOptionError = '';
-    let EndDateError = '';
+    let QueryError = "";
+    let OptionOneError = "";
+    let OptionTwoError = "";
+    let ChartOptionError = "";
+    let EndDateError = "";
 
     if (!Query) {
-      QueryError = 'Please Provide Query.';
+      QueryError = "Please Provide Query.";
     }
     if (!OptionOne) {
-      OptionOneError = 'Please Provide Option A.';
+      OptionOneError = "Please Provide Option A.";
     }
     if (!OptionTwo) {
-      OptionTwoError = 'Please Provide Option B.';
+      OptionTwoError = "Please Provide Option B.";
     }
     if (!ChartOption) {
-      ChartOptionError = 'Please Provide Chart Option.';
+      ChartOptionError = "Please Provide Chart Option.";
     }
     if (!EndDate) {
-      EndDateError = 'Please Provide End Date.';
+      EndDateError = "Please Provide End Date.";
+    }
+    if (
+      moment(EndDate).format("DD/MM/YYYY hh:mm:A") <
+      moment().format("DD/MM/YYYY hh:mm:A")
+    ) {
+      EndDateError = "Please Provide Valid EndDate.";
     }
     if (QueryError) {
       setError({ QueryError });
@@ -132,8 +160,7 @@ const CreateQuery = (props) => {
     }
 
     return true;
-  }
-
+  };
 
   const queryOnSubmit = async (e) => {
     e.preventDefault();
@@ -141,57 +168,72 @@ const CreateQuery = (props) => {
     if (isValid) {
       const userInfo = AuthData();
       const bodyFormData = new FormData();
-
       const queryObj = {
-        'UserID': user._id,
-        'Query': Query,
-        'OptionOne': OptionOne,
-        'OptionTwo': OptionTwo,
-        'ChartOption': ChartOption,
-        'IsPublic': IsPublic || false,
-        'EndDate': EndDate,
-        'Category': Category,
-        'OptionType': 1
+        UserID: user._id,
+        Query: Query,
+        // "Options":optionArray,
+        OptionOne: OptionOne,
+        OptionTwo: OptionTwo,
+        ChartOption: ChartOption,
+        IsPublic: IsPublic || false,
+        EndDate: EndDate,
+        Category: Category,
+        OptionType: 1,
       };
       for (const key in queryObj) {
-        if (key === 'EndDate') {
-          queryObj[key] = moment(queryObj.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY hh:mm A')
+        if (key === "EndDate") {
+          queryObj[key] = moment(queryObj.EndDate, "YYYY-MM-DD").format(
+            "DD/MM/YYYY hh:mm A"
+          );
         }
         bodyFormData.append(key, queryObj[key]);
       }
 
       Object.assign(userInfo.header, {
-        "Content-Type": 'multipart/form-data'
+        "Content-Type": "multipart/form-data",
       });
       let apiUrl;
       if (props.edit && props.queryId) {
-        console.log('edit query ..........');
         apiUrl = `http://localhost:8080//voteme/editquery/${props.queryId}`;
         await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
       } else {
-        apiUrl = 'http://localhost:8080/voteme/createpoll';
+        apiUrl = "http://localhost:8080/voteme/createpoll";
         await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
       }
-      history.push("/home");
+      navigate("/home");
     }
-  }
+  };
 
   return (
     <div>
-      <div className="blue-strip"><h1 className="page-title">Query Of The Day</h1></div>
+      <div className="blue-strip">
+        <h1 className="page-title">Query Of The Day</h1>
+      </div>
       <form onSubmit={(e) => queryOnSubmit(e)}>
         <div className="right-container-inner">
-          <div className="profile-info"><span className="profile-img"><img src={Image} alt="" /></span>
-            <span className="general-title">{FirstName} {LastName}</span><span className="credential-info">Engineer .</span>
+          <div className="profile-info">
+            <span className="profile-img">
+              <img src={Image} alt="" />
+            </span>
+            <span className="general-title">
+              {FirstName} {LastName}
+            </span>
+            <span className="credential-info">Engineer .</span>
           </div>
           <div className="select-query-type-block">
             <div className="upload-img-box">
               <div className="text-area-field">
-                <textarea className="full-height" name="Query" value={Query} placeholder="Write your query here..." onChange={(e) => onInputChange(e)}></textarea>
+                <textarea
+                  className="full-height"
+                  name="Query"
+                  value={Query}
+                  placeholder="Write your query here..."
+                  onChange={(e) => onInputChange(e)}
+                ></textarea>
               </div>
             </div>
             {QueryError ? (
-              <span style={{ color: 'red' }}> {QueryError}</span>
+              <span style={{ color: "red" }}> {QueryError}</span>
             ) : null}
           </div>
         </div>
@@ -200,29 +242,57 @@ const CreateQuery = (props) => {
           <div className="option-textarea">
             <div className="option-textarea-inner">
               <div className="text-area-field">
-                <textarea className="full-height" placeholder="Option A." maxLength="100" name='OptionOne' value={OptionOne} onChange={(e) => onInputChange(e)}
+                <textarea
+                  className="full-height"
+                  placeholder="Option A."
+                  maxLength="100"
+                  name="OptionOne"
+                  value={OptionOne}
+                  onChange={(e) => onInputChange(e)}
                 ></textarea>
               </div>
             </div>
             <div className="option-textarea-inner">
               <div className="text-area-field">
-                <textarea className="full-height" placeholder="Option B." maxLength="100" name='OptionTwo' value={OptionTwo} onChange={(e) => onInputChange(e)}></textarea>
+                <textarea
+                  className="full-height"
+                  placeholder="Option B."
+                  maxLength="100"
+                  name="OptionTwo"
+                  value={OptionTwo}
+                  onChange={(e) => onInputChange(e)}
+                ></textarea>
               </div>
             </div>
             {OptionOneError ? (
-              <span style={{ marginLeft: '10px', color: 'red' }}> {OptionOneError}</span>
+              <span style={{ marginLeft: "10px", color: "red" }}>
+                {" "}
+                {OptionOneError}
+              </span>
             ) : null}
             {OptionTwoError ? (
-              <span style={{ marginLeft: '55%', color: 'red' }}> {OptionTwoError}</span>
+              <span style={{ marginLeft: "55%", color: "red" }}>
+                {" "}
+                {OptionTwoError}
+              </span>
             ) : null}
-            {fields.length <= 4 && fields.map((field, id) => (
-              <div className="option-textarea-inner" key={`${field}-${id}`}>
-                <div className="text-area-field">
-                  <textarea className="full-height" placeholder={field.label} maxLength="100"></textarea>
-                  <div className="detete-opt"><span className="delete" onClick={() => optionRemove(id)}>X</span></div>
+            {fields.length <= 4 &&
+              fields.map((field, id) => (
+                <div className="option-textarea-inner" key={`${field}-${id}`}>
+                  <div className="text-area-field">
+                    <textarea
+                      className="full-height"
+                      placeholder={field.label}
+                      maxLength="100"
+                    ></textarea>
+                    <div className="detete-opt">
+                      <span className="delete" onClick={() => optionRemove(id)}>
+                        X
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <div className="add-options">
             <button type="button" onClick={() => optionAdd()}>
@@ -246,69 +316,152 @@ const CreateQuery = (props) => {
             </div>
 
             ))} */}
-              <input id="text" name="ChartOption" value={ChartOption[0]} type="radio" onChange={(e) => onInputChange(e)} />
-              <label htmlFor="text"><img src="assets/images/bar-chart.jpg" alt="" /><span >Bar Chart</span></label>
+              <input
+                id="text"
+                name="ChartOption"
+                value={ChartOption[0]}
+                type="radio"
+                onChange={(e) => onInputChange(e)}
+              />
+              <label htmlFor="text">
+                <img src="assets/images/bar-chart.jpg" alt="" />
+                <span>Bar Chart</span>
+              </label>
             </div>
             <div className="select-box-inner">
-              <input id="image" name="ChartOption" value={ChartOption[1]} type="radio" onChange={(e) => onInputChange(e)} />
-              <label htmlFor="image"><img src="assets/images/pie-chart.png" alt="" /><span>Pie Chart</span></label>
+              <input
+                id="image"
+                name="ChartOption"
+                value={ChartOption[1]}
+                type="radio"
+                onChange={(e) => onInputChange(e)}
+              />
+              <label htmlFor="image">
+                <img src="assets/images/pie-chart.png" alt="" />
+                <span>Pie Chart</span>
+              </label>
             </div>
             <div className="select-box-inner">
-              <input id="audio" name="ChartOption" value={ChartOption[2]} type="radio" onChange={(e) => onInputChange(e)} />
-              <label htmlFor="audio"><img src="assets/images/lin-chart.jpg" alt="" /><span>Line Chart</span></label>
+              <input
+                id="audio"
+                name="ChartOption"
+                value={ChartOption[2]}
+                type="radio"
+                onChange={(e) => onInputChange(e)}
+              />
+              <label htmlFor="audio">
+                <img src="assets/images/lin-chart.jpg" alt="" />
+                <span>Line Chart</span>
+              </label>
             </div>
             <div className="select-box-inner">
-              <input id="video" name="ChartOption" value={ChartOption[3]} type="radio" onChange={(e) => onInputChange(e)} />
-              <label htmlFor="video"><img src="assets/images/donut-chart.png" alt="" /><span>Donut Chart</span></label>
+              <input
+                id="video"
+                name="ChartOption"
+                value={ChartOption[3]}
+                type="radio"
+                onChange={(e) => onInputChange(e)}
+              />
+              <label htmlFor="video">
+                <img src="assets/images/donut-chart.png" alt="" />
+                <span>Donut Chart</span>
+              </label>
             </div>
           </div>
           {ChartOptionError ? (
-            <span style={{ marginLeft: '25px', color: 'red' }}> {ChartOptionError} <br></br></span>
+            <span style={{ marginLeft: "25px", color: "red" }}>
+              {" "}
+              {ChartOptionError} <br></br>
+            </span>
           ) : null}
         </div>
         <div className="ask-query">
           <div className="ask-query-inner flex-box">
             <h2 className="section-title">Share your query with</h2>
             <div className="query-type-radio">
-              <span className="public"><input id="public" type="radio" name="IsPublic" value={true} onChange={(e) => onInputChange(e)} />
-                <label htmlFor="public"><i className="fa fa-users" aria-hidden="true"></i> Public</label></span>
-              <span className="private"><input id="private" type="radio" name="IsPublic" value={false} onChange={(e) => onInputChange(e)} />
-                <label htmlFor="private"><i className="fa fa-user" aria-hidden="true"></i> Private</label></span>
+              <span className="public">
+                <input
+                  id="public"
+                  type="radio"
+                  name="IsPublic"
+                  value={true}
+                  onChange={(e) => onInputChange(e)}
+                />
+                <label htmlFor="public">
+                  <i className="fa fa-users" aria-hidden="true"></i> Public
+                </label>
+              </span>
+              <span className="private">
+                <input
+                  id="private"
+                  type="radio"
+                  name="IsPublic"
+                  value={false}
+                  onChange={(e) => onInputChange(e)}
+                />
+                <label htmlFor="private">
+                  <i className="fa fa-user" aria-hidden="true"></i> Private
+                </label>
+              </span>
             </div>
           </div>
         </div>
         <div className="query-end-time">
           <div className="query-end-inner flex-box">
             <h2 className="section-title">Query end time</h2>
-            <div className="select-date"><input type="date" name="EndDate" value={EndDate} onChange={(e) => onInputChange(e)} /></div>
+            <div className="select-date">
+              <input
+                type="date"
+                name="EndDate"
+                value={EndDate}
+                onChange={(e) => onInputChange(e)}
+              />
+            </div>
           </div>
         </div>
         {EndDateError ? (
-          <span style={{ marginLeft: '25px', color: 'red' }}> {EndDateError} <br></br></span>
+          <span style={{ marginLeft: "25px", color: "red" }}>
+            {" "}
+            {EndDateError} <br></br>
+            <br></br>
+          </span>
         ) : null}
         <div className="select-category">
           <h2 className="section-title">What are your interests?</h2>
-          <div className="category-cover" style={{
-            display: 'grid',
-            gridTemplateColumns: 'auto auto auto auto',
-            width: "70%",
-            marginLeft: '30px',
-            marginBottom: '50px'
-          }}>
+          <div
+            className="category-cover"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "auto auto auto auto",
+              width: "70%",
+              marginLeft: "30px",
+              marginBottom: "50px",
+            }}
+          >
             {category.map((e) => (
-              <div className="category-list" style={{ backgroundImage: `url(${e.Image})`, width: '107px' }}>
-                <input type="checkbox" name="CategoryId" value={e._id} onChange={(e) => selectCategory(e)} />
-                <label><span>{e.CategoryName}</span></label>
+              <div
+                className="category-list"
+                style={{ backgroundImage: `url(${e.Image})`, width: "107px" }}
+              >
+                <input
+                  type="checkbox"
+                  name="CategoryId"
+                  value={e._id}
+                  onChange={(e) => selectCategory(e)}
+                />
+                <label>
+                  <span>{e.CategoryName}</span>
+                </label>
               </div>
             ))}
           </div>
         </div>
-        <div className="submit-btn" style={{ marginLeft: '40%' }}>
+        <div className="submit-btn" style={{ marginLeft: "40%" }}>
           <button type="submit">Submit</button>
         </div>
       </form>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
 export default CreateQuery;

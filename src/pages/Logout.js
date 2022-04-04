@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../helper/ToastMessage';
 
 const Logout = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     useEffect(() => {
         localStorage.clear();
     }, []);
     ToastMessage('Logout Sucessfully!', true);
-    history.push('/login');
+    navigate('/login');
     return (
         <div>
 

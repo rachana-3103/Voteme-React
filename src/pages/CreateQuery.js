@@ -56,10 +56,15 @@ const CreateQuery = (props) => {
         `http://localhost:8080/voteme/querydetail/${props.queryId}`,
         { headers: userInfo.header }
       );
+
       setQuery({
         Query: getQuery.data.Data.Query,
         OptionOne: getQuery.data.Data.Options[0].Answer,
         OptionTwo: getQuery.data.Data.Options[1].Answer,
+        OptionThree: getQuery.data.Data.Options[2].Answer,
+        OptionFour: getQuery.data.Data.Options[3].Answer,
+        OptionFive: getQuery.data.Data.Options[4].Answer,
+        OptionSix: getQuery.data.Data.Options[5].Answer,
         ChartOption: getQuery.data.Data.ChartOption,
       });
     }
@@ -97,6 +102,10 @@ const CreateQuery = (props) => {
     Query,
     OptionOne,
     OptionTwo,
+    OptionThree,
+    OptionFour,
+    OptionFive,
+    OptionSix,
     ChartOption,
     Category,
     IsPublic,
@@ -163,6 +172,8 @@ const CreateQuery = (props) => {
   };
 
   const queryOnSubmit = async (e) => {
+    console.log('create query .............');
+
     e.preventDefault();
     const isValid = formValidate();
     if (isValid) {
@@ -174,6 +185,10 @@ const CreateQuery = (props) => {
         // "Options":optionArray,
         OptionOne: OptionOne,
         OptionTwo: OptionTwo,
+        OptionThree: OptionThree,
+        OptionFour: OptionFour,
+        OptionFive: OptionFive,
+        OptionSix: OptionSix,
         ChartOption: ChartOption,
         IsPublic: IsPublic || false,
         EndDate: EndDate,
@@ -186,7 +201,9 @@ const CreateQuery = (props) => {
             "DD/MM/YYYY hh:mm A"
           );
         }
-        bodyFormData.append(key, queryObj[key]);
+        if(queryObj[key] !== ''){
+          bodyFormData.append(key, queryObj[key]);
+        }
       }
 
       Object.assign(userInfo.header, {
@@ -218,7 +235,7 @@ const CreateQuery = (props) => {
             <span className="general-title">
               {FirstName} {LastName}
             </span>
-            <span className="credential-info">Engineer .</span>
+            <span className="credential-info">Engineer.</span>
           </div>
           <div className="select-query-type-block">
             <div className="upload-img-box">
@@ -280,11 +297,38 @@ const CreateQuery = (props) => {
               fields.map((field, id) => (
                 <div className="option-textarea-inner" key={`${field}-${id}`}>
                   <div className="text-area-field">
-                    <textarea
+                    {field.label === 'Option C.' && <textarea
                       className="full-height"
                       placeholder={field.label}
+                      name="OptionThree"
+                      value={OptionThree}
+                      onChange={(e) => onInputChange(e)}
                       maxLength="100"
-                    ></textarea>
+                    ></textarea>}
+                    {field.label === 'Option D.' && <textarea
+                      className="full-height"
+                      placeholder={field.label}
+                      name="OptionFour"
+                      value={OptionFour}
+                      onChange={(e) => onInputChange(e)}
+                      maxLength="100"
+                    ></textarea>}
+                    {field.label === 'Option E.' && <textarea
+                      className="full-height"
+                      placeholder={field.label}
+                      name="OptionFive"
+                      value={OptionFive}
+                      onChange={(e) => onInputChange(e)}
+                      maxLength="100"
+                    ></textarea>}
+                    {field.label === 'Option F.' && <textarea
+                      className="full-height"
+                      placeholder={field.label}
+                      name="OptionSix"
+                      value={OptionSix}
+                      onChange={(e) => onInputChange(e)}
+                      maxLength="100"
+                    ></textarea>}
                     <div className="detete-opt">
                       <span className="delete" onClick={() => optionRemove(id)}>
                         X
@@ -304,18 +348,7 @@ const CreateQuery = (props) => {
         <div className="chart-type">
           <div className="section-title">Representation of your results</div>
           <div className="custom-select-box">
-            {/* {query && query.ChartOption === ChartOption[0] ? */}
             <div className="select-box-inner">
-              {/* {console.log(ChartOption, ';;;;;;;;;;')} */}
-              {/* (<input id="text" name="ChartOption" value={ChartOption[0]} type="radio" onChange={(e) => onInputChange(e)} />
-                <label htmlFor="text"><img src="assets/images/bar-chart.jpg" alt="" /><span >Bar Chart</span></label> </div>) :
-
-            (<div className="select-box-inner">
-              <input id="text" name="ChartOption" value={ChartOption[0]} type="radio" onChange={(e) => onInputChange(e)} />
-              <label htmlFor="text"><img src="assets/images/bar-chart.jpg" alt="" /><span >Bar Chart</span></label>
-            </div>
-
-            ))} */}
               <input
                 id="text"
                 name="ChartOption"

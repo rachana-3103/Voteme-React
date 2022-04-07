@@ -32,7 +32,6 @@ const Voted = (props) => {
         }
     }
     const CloseVote =  () => {
-        // props.close()
         navigate('/home');
     }
 

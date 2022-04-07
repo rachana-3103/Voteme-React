@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthData } from '../helper/AuthData';
+import { PieChart } from 'react-minimal-pie-chart';
+import  BarChart from 'react-bar-chart';
+import { Bar } from "react-chartjs-2";
 
 const QueryEndDetails = (props) => {
     const userInfo = AuthData();
@@ -9,15 +12,29 @@ const QueryEndDetails = (props) => {
         Category: [],
         Options: [],
     });
-
-    const getQueryByQueryId = async () => {
-        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.queryId}`, { headers: userInfo.header });
-        setQuery(queryObj.data.Data);
-    }
-
+    const [data, setData] = useState([]);
+    
     useEffect(() => {
         getQueryByQueryId();
     }, []);
+    
+    const getQueryByQueryId = async () => {
+        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.data}`, { headers: userInfo.header });
+        let data = [];
+        queryObj.data.Data.Options.map((obj) => {
+            var randomColor = "#000000".replace(/0/g, function () {
+                return (~~(Math.random() * 16)).toString(16);
+            });
+            let insert = {
+                color: randomColor,
+                title: obj.Key,
+                value: Number(obj.Percentage),
+            };
+            data.push(insert);
+        });
+        setData(data);
+        setQuery(queryObj.data.Data);
+    }
 
     const categoryArray = [];
     query.Category.forEach((category) => {
@@ -36,11 +53,49 @@ const QueryEndDetails = (props) => {
                     </div>
                 </div>
                 <div className="query-desc">
+                    {console.log(query, '......................query')}
                     <h2 className="small-title">{query.Query}</h2>
                     <div className="query-chart">
                         <div class="voting-chart-cover">
                             <div class="chart-img">
-                                <img src="assets/images/chart-img.png" alt="" />
+                                {/* {query.ChartOption === '1' && 
+                                <Bar
+                                    ylabel='Quantity'
+                                    style={{ top: 20, right: 20, bottom: 30, left: 40 }}
+                                    width={500}
+                                    height={500}
+                                    data={[
+                                        { text: 'Man', value: 500 },
+                                        { text: 'Woman', value: 300 }
+                                    ]}
+                                />} */}
+                                {query.ChartOption === '2' &&
+                                    <PieChart
+                                        style={{ height: '20%', width: '30%', marginLeft: '300px' }}
+                                        // animate
+                                        // animationDuration={200}
+                                        // animationEasing="ease-out"
+                                        // center={[50, 50]}
+                                        // lengthAngle={360}
+                                        // lineWidth={40}
+                                        data={data}
+                                        paddingAngle={0}
+                                        radius={50}
+                                        // rounded
+                                        startAngle={0}
+                                        viewBoxSize={[100, 100]}
+                                        labelPosition={65}
+                                        label={(data) => data.title}
+                                        labelStyle={{
+                                            fontSize: "20px",
+                                            fontColor: "FFFFFA",
+                                            fontWeight: "1500",
+                                        }}
+                                    />}
+                                {/* {query.ChartOption === '3' && <img src="assets/images/lin-chart.jpg" alt="" />} */}
+                                {/* {query.ChartOption === '4' && <img src="assets/images/donut-chart.png" alt="" />} */}
+
+                                {/* <img src="assets/images/chart-img.png" alt="" /> */}
                             </div>
                             <div className="custom-select-box voting-box-show">
                                 {query.Options.map((option) => (

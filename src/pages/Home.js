@@ -18,7 +18,6 @@ const Home = (props) => {
   const [query, setQuery] = useState([]);
   const [like, setLike] = useState([]);
   const [queryId, setQueryId] = useState(null);
-  const [viewQuery, setViewQuery] = useState(false);
   const { FirstName, LastName, Image } = user;
 
   useEffect(() => {
@@ -56,7 +55,7 @@ const Home = (props) => {
       LikedBy: user._id,
     };
     try {
-       likeData = await axios.post(
+      likeData = await axios.post(
         `http://localhost:8080/voteme/${queryObj._id}/likeordislike`,
         queryLike,
         { headers: userInfo.header }
@@ -87,7 +86,8 @@ const Home = (props) => {
 
   const viewQueryId = async (queryId) => {
     setQueryId(queryId);
-    setViewQuery(true);
+    props.QueryData(queryId);
+    navigate('/queryEndDetails')
   };
 
   return (

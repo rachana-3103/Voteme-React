@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthData } from '../helper/AuthData';
 import Voted from './Voted';
+import ToastMessage from '../helper/ToastMessage';
 
 const QueryDetails = (props) => {
     const userInfo = AuthData();
@@ -18,10 +19,8 @@ const QueryDetails = (props) => {
         userId: "",
         queryId: ""
     });
-
     const getQueryByQueryId = async () => {
         const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.data._id}`, { headers: userInfo.header });
-        console.log(queryObj,'...............obj');
         setQuery(queryObj.data.Data);
     }
 
@@ -29,14 +28,20 @@ const QueryDetails = (props) => {
         getQueryByQueryId();
     }, []);
 
-    const onVoted = (option, optionId, userId, queryId) => {
+    const onVoted = async (option, optionId, userId, queryId) => {
         const vote = { voted: true, option, optionId, userId, queryId };
+        const body = { UserID: userId, QueryId: queryId, OptionId: optionId };
+        const giveVote = await axios.post('http://localhost:8080/voteme/givevote', body, { headers: userInfo.header });
+        console.log(giveVote.data.Error, '.............error vote');
+        // if (giveVote.data.Error) {
+        //     ToastMessage(giveVote.data.Error.Message, false);
+        // }
         setVoted(vote);
     }
     const categoryArray = [];
-    // query.Category.forEach((category) => {
-    //     categoryArray.push(category.CategoryName);
-    // });
+    query.Category.forEach((category) => {
+        categoryArray.push(category.CategoryName);
+    });
 
     return (
         <div className="my-queries query-details-page">
@@ -54,7 +59,6 @@ const QueryDetails = (props) => {
                     <h2 className="small-title">{query.Query}</h2>
                     <div className="query-chart">
                         <div className="custom-select-box voting-box-show">
-                            {console.log(query,'......................mmmmmm')}
                             {query.Options.map((option) => (
                                 <div className="select-box-inner select-text">
                                     <div className="select-box-main">

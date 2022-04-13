@@ -36,6 +36,7 @@ const SelectCategory = () => {
         }
         setUserCategory(userCategory);
     }
+    
     const submit = async (e) => {
         e.preventDefault();
         const body = { Category: userCategory };

@@ -30,7 +30,7 @@ const MyQuery = () => {
 
   const deleteQuery = async (queryId) => {
     const queryData = await axios.delete(`http://localhost:8080/voteme/deletequery/${queryId}`, { headers: userInfo.header });
-    ToastMessage(queryData.data.Data.message, true);
+    ToastMessage(queryData.data.message, true);
     loadMyQuery();
   }
 

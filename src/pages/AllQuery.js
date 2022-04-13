@@ -6,7 +6,16 @@ import { AuthData } from '../helper/AuthData';
 const AllQuery = () => {
     const location = useLocation();
     const userInfo = AuthData();
-    const { id } = useParams();
+    let { id } = useParams();
+    if (id === 'all') {
+        id = 1;
+    } else if (id === 'recent') {
+        id = 2;
+    } else if (id === 'top-10') {
+        id = 3;
+    } else {
+        id = 4;
+    }
     let percentage = 0;
     const [query, setQuery] = useState([]);
     useEffect(() => {
@@ -25,10 +34,10 @@ const AllQuery = () => {
                 <div className="query-tabing">
                     <div className="tab-listing">
                         <ul className="tabbing-nav">
-                            <li className={location.pathname === "/query/1" ? "active-tab" : ""}><Link to={`/query/${1}`}>All Queries</Link></li>
-                            <li className={location.pathname === "/query/2" ? "active-tab" : ""}><Link to={`/query/${2}`} >Recent Queries</Link></li>
-                            <li className={location.pathname === "/query/3" ? "active-tab" : ""}><Link to={`/query/${3}`}>Top 10 Queries</Link></li>
-                            <li className={location.pathname === "/query/4" ? "active-tab" : ""}><Link to={`/query/${4}`} >Popular Queries</Link></li>
+                            <li className={location.pathname === "/query/all" ? "active-tab" : ""}><Link to={`/query/all`}>All Queries</Link></li>
+                            <li className={location.pathname === "/query/recent" ? "active-tab" : ""}><Link to={`/query/recent`} >Recent Queries</Link></li>
+                            <li className={location.pathname === "/query/top-10" ? "active-tab" : ""}><Link to={`/query/top-10`}>Top 10 Queries</Link></li>
+                            <li className={location.pathname === "/query/popular" ? "active-tab" : ""}><Link to={`/query/popular`} >Popular Queries</Link></li>
                         </ul>
                     </div>
                     <div className="tabs-content-cover">

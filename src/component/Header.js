@@ -39,10 +39,9 @@ const Header = () => {
                             <ul className="nav">
                                 <li
                                 //  className="active"
-                                ><a href="/abc">Home</a></li>
-                                <li><a href="/abc">About</a></li>
-                                <li><a href="/abc">Notifications</a></li>
-                                <li><a href="/abc">Contact Us</a></li>
+                                ><a href="/">Home</a></li>
+                                <li><a href="/">About</a></li>
+                                <li><a href="/">Contact Us</a></li>
                             </ul>
                         </div>
                         <div className="header-right-block">
@@ -68,7 +67,7 @@ const Header = () => {
                                         </li>
                                         <li><a href="/abc">Language</a></li>
                                         <li><a href="/abc">Settings</a></li>
-                                        <li><a href="/abc">Logout</a></li>
+                                        <li><a href="/">Logout</a></li>
                                     </ul>
                                 </div>
                             </div>

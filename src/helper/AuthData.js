@@ -3,6 +3,7 @@ export const AuthData = () => {
     if (userData) {
         let id = userData["data"]["Data"]["user"]["_id"];
         let category = userData["data"]["Data"]["user"]["Category"];
+        let image = userData["data"]["Data"]["user"]["Image"];
         const token = userData["data"]["Data"]["AuthoToken"];
         const header = {
             Authorization: `Bearer ${token}`,
@@ -13,7 +14,8 @@ export const AuthData = () => {
             header,
             apiUrl,
             id,
-            category
+            category,
+            image
         }
     } else {
         return null;

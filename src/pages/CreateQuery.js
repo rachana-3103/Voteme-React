@@ -3,6 +3,7 @@ import { AuthData } from "../helper/AuthData";
 import axios from "axios";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import ToastMessage from "../helper/ToastMessage";
 
 const CreateQuery = (props) => {
   const navigate = useNavigate();
@@ -61,11 +62,14 @@ const CreateQuery = (props) => {
         Query: getQuery.data.Data.Query,
         OptionOne: getQuery.data.Data.Options[0].Answer,
         OptionTwo: getQuery.data.Data.Options[1].Answer,
-        OptionThree: getQuery.data.Data.Options[2].Answer,
-        OptionFour: getQuery.data.Data.Options[3].Answer,
-        OptionFive: getQuery.data.Data.Options[4].Answer,
-        OptionSix: getQuery.data.Data.Options[5].Answer,
+        OptionThree: getQuery.data.Data.Options[2] && getQuery.data.Data.Options[2].Answer,
+        OptionFour: getQuery.data.Data.Options[3] && getQuery.data.Data.Options[3].Answer,
+        OptionFive: getQuery.data.Data.Options[4] && getQuery.data.Data.Options[4].Answer,
+        OptionSix: getQuery.data.Data.Options[5] && getQuery.data.Data.Options[5].Answer,
         ChartOption: getQuery.data.Data.ChartOption,
+        Category: getQuery.data.Data.Category,
+        EndDate: getQuery.data.Data.EndDate,
+        IsPublic: getQuery.data.Data.IsPublic
       });
     }
   };
@@ -172,8 +176,6 @@ const CreateQuery = (props) => {
   };
 
   const queryOnSubmit = async (e) => {
-    console.log('create query .............');
-
     e.preventDefault();
     const isValid = formValidate();
     if (isValid) {
@@ -182,13 +184,12 @@ const CreateQuery = (props) => {
       const queryObj = {
         UserID: user._id,
         Query: Query,
-        // "Options":optionArray,
         OptionOne: OptionOne,
         OptionTwo: OptionTwo,
-        OptionThree: OptionThree,
-        OptionFour: OptionFour,
-        OptionFive: OptionFive,
-        OptionSix: OptionSix,
+        OptionThree: OptionThree ? OptionThree : '',
+        OptionFour: OptionFour ? OptionFour : '',
+        OptionFive: OptionFive ? OptionFive : '',
+        OptionSix: OptionSix ? OptionSix : '',
         ChartOption: ChartOption,
         IsPublic: IsPublic || false,
         EndDate: EndDate,
@@ -201,7 +202,7 @@ const CreateQuery = (props) => {
             "DD/MM/YYYY hh:mm A"
           );
         }
-        if(queryObj[key] !== ''){
+        if (queryObj[key] !== '') {
           bodyFormData.append(key, queryObj[key]);
         }
       }
@@ -209,13 +210,16 @@ const CreateQuery = (props) => {
       Object.assign(userInfo.header, {
         "Content-Type": "multipart/form-data",
       });
+
       let apiUrl;
       if (props.edit && props.queryId) {
-        apiUrl = `http://localhost:8080//voteme/editquery/${props.queryId}`;
+        apiUrl = `http://localhost:8080/voteme/editquery/${props.queryId}`;
         await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
       } else {
         apiUrl = "http://localhost:8080/voteme/createpoll";
-        await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
+        const data  = await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
+        console.log(data.data ,'............data');
+        ToastMessage(data.data.message ,  true);
       }
       navigate("/home");
     }
@@ -354,6 +358,7 @@ const CreateQuery = (props) => {
                 name="ChartOption"
                 value={ChartOption[0]}
                 type="radio"
+                checked={ChartOption === '1' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="text">
@@ -367,6 +372,7 @@ const CreateQuery = (props) => {
                 name="ChartOption"
                 value={ChartOption[1]}
                 type="radio"
+                checked={ChartOption === '2' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="image">
@@ -380,6 +386,7 @@ const CreateQuery = (props) => {
                 name="ChartOption"
                 value={ChartOption[2]}
                 type="radio"
+                checked={ChartOption === '3' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="audio">
@@ -393,6 +400,7 @@ const CreateQuery = (props) => {
                 name="ChartOption"
                 value={ChartOption[3]}
                 type="radio"
+                checked={ChartOption === '4' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="video">
@@ -418,6 +426,7 @@ const CreateQuery = (props) => {
                   type="radio"
                   name="IsPublic"
                   value={true}
+                  checked={IsPublic === true ? 'checked' : null}
                   onChange={(e) => onInputChange(e)}
                 />
                 <label htmlFor="public">
@@ -430,6 +439,7 @@ const CreateQuery = (props) => {
                   type="radio"
                   name="IsPublic"
                   value={false}
+                  checked={IsPublic === false ? 'checked' : null}
                   onChange={(e) => onInputChange(e)}
                 />
                 <label htmlFor="private">
@@ -474,12 +484,12 @@ const CreateQuery = (props) => {
             {category.map((e) => (
               <div
                 className="category-list"
-                style={{ backgroundImage: `url(${e.Image})`, width: "107px" }}
-              >
+                style={{ backgroundImage: `url(${e.Image})`, width: "107px" }}>
                 <input
                   type="checkbox"
                   name="CategoryId"
                   value={e._id}
+                  defaultChecked={category && Category.some(el => el._id === e._id)}
                   onChange={(e) => selectCategory(e)}
                 />
                 <label>

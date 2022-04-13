@@ -13,12 +13,9 @@ import SelectCategory from './SelectCategory';
 import AllQuery from './AllQuery';
 import Layout from '../component/Layout';
 import QueryDetails from './QueryDetails';
-// import axios from "axios";
-// import { AuthData } from "../helper/AuthData";
-
 
 const withHeader = ['/my-profile', '/home', '/queryDetails', '/queryEndDetails', '/my-query', '/terms-condition',
-    '/help', '/createQuery', '/query/1', '/query/2', '/query/3', '/query/4'];
+    '/help', '/createQuery', '/query/all', '/query/recent', '/query/top-10', '/query/popular'];
 
 const Content = () => {
     const location = useLocation();

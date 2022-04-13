@@ -23,10 +23,10 @@ const SideBar = () => {
                             <img className="sidebar-icon hover-icon" src="assets/images/hover-question-mark.svg" alt="" /> Queries </Link>
 
                         {subMenu && <ul className="sidebar-submenu">
-                            <li><Link to="/query/1"><span style={{ fontSize: '12px' }}>All Queries</span></Link></li>
-                            <li> <Link to="/query/2"><span style={{ fontSize: '12px' }}>Recent Queries</span></Link></li>
-                            <li><Link to="/query/3"><span style={{ fontSize: '12px' }}>Top 10 Queries</span></Link></li>
-                            <li><Link to="/query/4"><span style={{ fontSize: '12px' }}>Most Popular Queries</span></Link></li>
+                            <li><Link to="/query/all"><span style={{ fontSize: '12px' }}>All Queries</span></Link></li>
+                            <li> <Link to="/query/recent"><span style={{ fontSize: '12px' }}>Recent Queries</span></Link></li>
+                            <li><Link to="/query/top-10"><span style={{ fontSize: '12px' }}>Top 10 Queries</span></Link></li>
+                            <li><Link to="/query/popular"><span style={{ fontSize: '12px' }}>Most Popular Queries</span></Link></li>
                         </ul>}
                     </li>
 

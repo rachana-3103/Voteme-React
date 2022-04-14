@@ -3,6 +3,7 @@ import axios from "axios";
 import { AuthData } from "../helper/AuthData";
 import CreateQuery from "./CreateQuery";
 import ToastMessage from '../helper/ToastMessage';
+import UpdateQuery from "./UpdateQuery";
 
 const MyQuery = () => {
   const [query, setQuery] = useState([]);
@@ -36,7 +37,7 @@ const MyQuery = () => {
 
   return (
     <div className="my-queries">
-      {editFlag && <CreateQuery edit={editFlag} queryId={queryId} />}
+      {editFlag && < UpdateQuery query={query} />}
       {!editFlag && <div className="query-tabing">
         <div className="tab-listing">
           <ul className="tabbing-nav">

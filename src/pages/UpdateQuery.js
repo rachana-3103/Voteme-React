@@ -5,7 +5,7 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import ToastMessage from "../helper/ToastMessage";
 
-const CreateQuery = (props) => {
+const UpdateQuery = (props) => {
   const navigate = useNavigate();
   const optionName = ["Option C.", "Option D.", "Option E.", "Option F."];
   const userInfo = AuthData();
@@ -16,18 +16,18 @@ const CreateQuery = (props) => {
     Image: "",
   });
   const [query, setQuery] = useState({
-    Query: "",
-    OptionOne: "",
-    OptionTwo: "",
-    OptionThree: "",
-    OptionFour: "",
-    OptionFive: "",
-    OptionSix: "",
-    ChartOption: ["1", "2", "3", "4"],
-    IsPublic: "",
-    CategoryId: "",
-    Category: [],
-    EndDate: "",
+    // Query: "",
+    // OptionOne: "",
+    // OptionTwo: "",
+    // OptionThree: "",
+    // OptionFour: "",
+    // OptionFive: "",
+    // OptionSix: "",
+    // ChartOption: ["1", "2", "3", "4"],
+    // IsPublic: "",
+    // CategoryId: "",
+    // Category: [],
+    // EndDate: "",
   });
 
   const [error, setError] = useState({
@@ -194,16 +194,8 @@ const CreateQuery = (props) => {
         "Content-Type": "multipart/form-data",
       });
 
-      let apiUrl;
-      if (props.edit && props.queryId) {
-        apiUrl = `http://localhost:8080/voteme/editquery/${props.queryId}`;
-        await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
-      } else {
-        apiUrl = "http://localhost:8080/voteme/createpoll";
-        const data  = await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
-        console.log(data.data ,'............data');
-        ToastMessage(data.data.message ,  true);
-      }
+      const apiUrl = `http://localhost:8080/voteme/editquery/${props.query[0]._id}`;
+      await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
       navigate("/home");
     }
   };
@@ -230,7 +222,7 @@ const CreateQuery = (props) => {
                 <textarea
                   className="full-height"
                   name="Query"
-                  value={Query}
+                  value={props.query[0].Query}
                   placeholder="Write your query here..."
                   onChange={(e) => onInputChange(e)}
                 ></textarea>
@@ -251,7 +243,7 @@ const CreateQuery = (props) => {
                   placeholder="Option A."
                   maxLength="100"
                   name="OptionOne"
-                  value={OptionOne}
+                  value={props.query[0].Options[0].Options[0].Answer}
                   onChange={(e) => onInputChange(e)}
                 ></textarea>
               </div>
@@ -263,7 +255,7 @@ const CreateQuery = (props) => {
                   placeholder="Option B."
                   maxLength="100"
                   name="OptionTwo"
-                  value={OptionTwo}
+                  value={props.query[0].Options[0].Options[1].Answer}
                   onChange={(e) => onInputChange(e)}
                 ></textarea>
               </div>
@@ -288,7 +280,7 @@ const CreateQuery = (props) => {
                       className="full-height"
                       placeholder={field.label}
                       name="OptionThree"
-                      value={OptionThree}
+                      value={props.query[0].Options[0].Options[2].Answer}
                       onChange={(e) => onInputChange(e)}
                       maxLength="100"
                     ></textarea>}
@@ -296,7 +288,7 @@ const CreateQuery = (props) => {
                       className="full-height"
                       placeholder={field.label}
                       name="OptionFour"
-                      value={OptionFour}
+                      value={props.query[0].Options[0].Options[3].Answer}
                       onChange={(e) => onInputChange(e)}
                       maxLength="100"
                     ></textarea>}
@@ -304,7 +296,7 @@ const CreateQuery = (props) => {
                       className="full-height"
                       placeholder={field.label}
                       name="OptionFive"
-                      value={OptionFive}
+                      value={props.query[0].Options[0].Options[4].Answer}
                       onChange={(e) => onInputChange(e)}
                       maxLength="100"
                     ></textarea>}
@@ -312,7 +304,7 @@ const CreateQuery = (props) => {
                       className="full-height"
                       placeholder={field.label}
                       name="OptionSix"
-                      value={OptionSix}
+                      value={props.query[0].Options[0].Options[5].Answer}
                       onChange={(e) => onInputChange(e)}
                       maxLength="100"
                     ></textarea>}
@@ -339,9 +331,9 @@ const CreateQuery = (props) => {
               <input
                 id="text"
                 name="ChartOption"
-                value={ChartOption}
+                value={props.query[0].ChartOption}
                 type="radio"
-                checked={ChartOption === '1' ? 'checked' : null}
+                checked={props.query[0].ChartOption === '1' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="text">
@@ -353,9 +345,9 @@ const CreateQuery = (props) => {
               <input
                 id="image"
                 name="ChartOption"
-                value={ChartOption}
+                value={props.query[0].ChartOption}
                 type="radio"
-                checked={ChartOption === '2' ? 'checked' : null}
+                checked={props.query[0].ChartOption === '2' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="image">
@@ -367,9 +359,9 @@ const CreateQuery = (props) => {
               <input
                 id="audio"
                 name="ChartOption"
-                value={ChartOption}
+                value={props.query[0].ChartOption}
                 type="radio"
-                checked={ChartOption === '3' ? 'checked' : null}
+                checked={props.query[0].ChartOption === '3' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="audio">
@@ -381,9 +373,9 @@ const CreateQuery = (props) => {
               <input
                 id="video"
                 name="ChartOption"
-                value={ChartOption}
+                value={props.query[0].ChartOption}
                 type="radio"
-                checked={ChartOption === '4' ? 'checked' : null}
+                checked={props.query[0].ChartOption === '4' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
               />
               <label htmlFor="video">
@@ -409,7 +401,7 @@ const CreateQuery = (props) => {
                   type="radio"
                   name="IsPublic"
                   value={true}
-                  checked={IsPublic === true ? 'checked' : null}
+                  checked={props.query[0].IsPublic === true ? 'checked' : null}
                   onChange={(e) => onInputChange(e)}
                 />
                 <label htmlFor="public">
@@ -422,7 +414,7 @@ const CreateQuery = (props) => {
                   type="radio"
                   name="IsPublic"
                   value={false}
-                  checked={IsPublic === false ? 'checked' : null}
+                  checked={props.query[0].IsPublic === false ? 'checked' : null}
                   onChange={(e) => onInputChange(e)}
                 />
                 <label htmlFor="private">
@@ -439,7 +431,7 @@ const CreateQuery = (props) => {
               <input
                 type="date"
                 name="EndDate"
-                value={EndDate}
+                value={props.query[0].EndDate}
                 onChange={(e) => onInputChange(e)}
               />
             </div>
@@ -468,12 +460,15 @@ const CreateQuery = (props) => {
               <div
                 className="category-list"
                 style={{ backgroundImage: `url(${e.Image})`, width: "107px" }}>
-                <input
-                  type="checkbox"
-                  name="CategoryId"
-                  value={e._id}
-                  onChange={(e) => selectCategory(e)}
-                />
+                {props.query[0].Category.map((obj) => (
+                  <input
+                    type="checkbox"
+                    name="CategoryId"
+                    value={e._id}
+                    defaultChecked={category && e.CategoryName === obj}
+                    onChange={(e) => selectCategory(e)}
+                  />
+                ))}
                 <label>
                   <span>{e.CategoryName}</span>
                 </label>
@@ -489,4 +484,4 @@ const CreateQuery = (props) => {
   );
 };
 
-export default CreateQuery;
+export default UpdateQuery;

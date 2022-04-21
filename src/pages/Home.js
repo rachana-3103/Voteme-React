@@ -234,7 +234,9 @@ const Home = (props) => {
                                       disLikeObj._id === queryData._id
                                   )?.TotalDisLikes || 0}
                                 </span>
-                                <span className="comments">
+                                <span className="comments"  onClick={() =>
+                                    getQueryById(queryData)
+                                  }>
                                   <img
                                     src="assets/images/speech-bubble-outline.svg"
                                     alt=""

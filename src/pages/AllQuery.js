@@ -21,7 +21,7 @@ const AllQuery = () => {
     useEffect(() => {
         loadQuery();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [id]);
 
     const loadQuery = async () => {
         const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=${id}`, { headers: userInfo.header })

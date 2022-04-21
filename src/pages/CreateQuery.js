@@ -52,8 +52,21 @@ const CreateQuery = (props) => {
     );
     setCategory(categoryData.data.Data);
 
-    if (props.edit && props.query) {
-      setQuery(props.query);
+    if (props.query) {
+      const getQuery = props.query[0];
+      setQuery({
+        Query: getQuery.Query,
+        OptionOne: getQuery.Options[0].Options[0].Answer,
+        OptionTwo: getQuery.Options[0].Options[1].Answer,
+        OptionThree: getQuery.Options[0].Options[2] && getQuery.Options[0].Options[2].Answer,
+        OptionFour: getQuery.Options[0].Options[3] && getQuery.Options[0].Options[3].Answer,
+        OptionFive: getQuery.Options[0].Options[4] && getQuery.Options[0].Options[4].Answer,
+        OptionSix: getQuery.Options[0].Options[5] && getQuery.Options[0].Options[5].Answer,
+        ChartOption: getQuery.ChartOption,
+        Category: getQuery.Category,
+        EndDate: getQuery.EndDate,
+        IsPublic: getQuery.IsPublic
+      });
     }
   };
 
@@ -195,14 +208,14 @@ const CreateQuery = (props) => {
       });
 
       let apiUrl;
-      if (props.edit && props.queryId) {
-        apiUrl = `http://localhost:8080/voteme/editquery/${props.queryId}`;
-        await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
+      if (props.query) {
+        apiUrl = `http://localhost:8080/voteme/editquery/${props.query[0]._id}`;
+        const data = await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
+        ToastMessage(data.data.message, true);
       } else {
         apiUrl = "http://localhost:8080/voteme/createpoll";
-        const data  = await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
-        console.log(data.data ,'............data');
-        ToastMessage(data.data.message ,  true);
+        const data = await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
+        ToastMessage(data.data.message, true);
       }
       navigate("/home");
     }
@@ -339,7 +352,7 @@ const CreateQuery = (props) => {
               <input
                 id="text"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[0]}
                 type="radio"
                 checked={ChartOption === '1' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -353,7 +366,7 @@ const CreateQuery = (props) => {
               <input
                 id="image"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[1]}
                 type="radio"
                 checked={ChartOption === '2' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -367,7 +380,7 @@ const CreateQuery = (props) => {
               <input
                 id="audio"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[2]}
                 type="radio"
                 checked={ChartOption === '3' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -381,7 +394,7 @@ const CreateQuery = (props) => {
               <input
                 id="video"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[3]}
                 type="radio"
                 checked={ChartOption === '4' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -468,6 +481,14 @@ const CreateQuery = (props) => {
               <div
                 className="category-list"
                 style={{ backgroundImage: `url(${e.Image})`, width: "107px" }}>
+                  <input
+                    type="checkbox"
+                    name="CategoryId"
+                    value={e._id}
+                    defaultChecked={query.Category.some(el => el === e.CategoryName)}
+                    onChange={(e) => selectCategory(e)}
+                  />
+                {/* ))} */}
                 <input
                   type="checkbox"
                   name="CategoryId"

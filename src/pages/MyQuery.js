@@ -3,9 +3,10 @@ import axios from "axios";
 import { AuthData } from "../helper/AuthData";
 import CreateQuery from "./CreateQuery";
 import ToastMessage from '../helper/ToastMessage';
-import UpdateQuery from "./UpdateQuery";
+import { useNavigate } from "react-router-dom";
 
-const MyQuery = () => {
+const MyQuery = (props) => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState([]);
   const [editFlag, setEditFlag] = useState(false);
   const [queryId, setQueryId] = useState();
@@ -37,7 +38,7 @@ const MyQuery = () => {
 
   return (
     <div className="my-queries">
-      {editFlag && < UpdateQuery query={query} />}
+      {editFlag && < CreateQuery query={query} />}
       {!editFlag && <div className="query-tabing">
         <div className="tab-listing">
           <ul className="tabbing-nav">
@@ -118,13 +119,13 @@ const MyQuery = () => {
                           />{" "}
                           {queryData.TotalDisLikes}
                         </span>
-                        <span className="comments">
+                        {/* <span className="comments" onC>
                           <img
                             src="assets/images/speech-bubble-outline.svg"
                             alt=""
                           />{" "}
                           {queryData.TotalComments}
-                        </span>
+                        </span> */}
                         <span className="viewers">
                           <img src="assets/images/view-outline.svg" alt="" /> {queryData.TotalViews}
                         </span>

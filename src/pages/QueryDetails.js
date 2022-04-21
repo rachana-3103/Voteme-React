@@ -155,8 +155,8 @@ const QueryDetails = (props) => {
                                             <img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" />Like. &nbsp;
                                             <span className="likes"> {comment.TotalLikes}</span>
                                         </div>
-                                        <div className="comment-react flex-box"><span>
-                                            <img src="assets/images/replay-arrow.png" alt="" /></span> Reply</div>
+                                        {/* <div className="comment-react flex-box"><span> */}
+                                            {/* <img src="assets/images/replay-arrow.png" alt="" /></span> Reply</div> */}
                                     </div>
                                 </div>
                             </div>

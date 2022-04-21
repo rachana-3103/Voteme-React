@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthData } from '../helper/AuthData';
+import { useNavigate } from 'react-router-dom';
 import { PieChart } from 'react-minimal-pie-chart';
-import  BarChart from 'react-bar-chart';
+import BarChart from 'react-bar-chart';
 import { Bar } from "react-chartjs-2";
+import ToastMessage from "../helper/ToastMessage";
 
 const QueryEndDetails = (props) => {
+    const navigate = useNavigate();
     const userInfo = AuthData();
+    const [comment, setComment] = useState();
+    const [getComment, setGetComment] = useState();
     const [query, setQuery] = useState({
         UserDetails: "",
         Category: [],
         Options: [],
     });
     const [data, setData] = useState([]);
-    
+
     useEffect(() => {
         getQueryByQueryId();
+        getCommentById();
     }, []);
-    
+
     const getQueryByQueryId = async () => {
         const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.data}`, { headers: userInfo.header });
         let data = [];
@@ -34,6 +40,37 @@ const QueryEndDetails = (props) => {
         });
         setData(data);
         setQuery(queryObj.data.Data);
+    }
+    const getCommentById = async () => {
+        const commentObj = await axios.get(`http://localhost:8080/voteme/${props.data}/getComments`, { headers: userInfo.header });
+        if (commentObj.data.data[0].Records[0]) {
+            setGetComment(commentObj.data.data[0].Records[0].replay);
+        }
+    }
+    const onInputChange = (e) => {
+        setComment({ ...comment, [e.target.name]: e.target.value });
+    };
+
+    const addComment = async (Comment, queryId, userId) => {
+        const body = { Comment: Comment.Comment, CommentedBy: userId }
+        const addCommentData = await axios.post(`http://localhost:8080/voteme/${queryId}/createComments`,
+            body, { headers: userInfo.header });
+        if (addCommentData.data.Error) {
+            ToastMessage(addCommentData.data.Error.Message, false);
+        }
+        navigate('/home');
+    }
+
+    const likeDislikeComment = async (queryId, userId, commentId) => {
+        const body = { Like: true, LikedBy: userId }
+        const obj = await axios.post(`http://localhost:8080/voteme/${queryId}/comment/${commentId}/likeordislike`,
+            body, { headers: userInfo.header });
+        if (obj.data.message) {
+            ToastMessage(obj.data.message, true);
+            await getCommentById();
+        } else {
+            ToastMessage(obj.data.Error.Message, false);
+        }
     }
 
     const categoryArray = [];
@@ -53,7 +90,6 @@ const QueryEndDetails = (props) => {
                     </div>
                 </div>
                 <div className="query-desc">
-                    {console.log(query, '......................query')}
                     <h2 className="small-title">{query.Query}</h2>
                     <div className="query-chart">
                         <div class="voting-chart-cover">
@@ -72,16 +108,9 @@ const QueryEndDetails = (props) => {
                                 {query.ChartOption === '2' &&
                                     <PieChart
                                         style={{ height: '20%', width: '30%', marginLeft: '300px' }}
-                                        // animate
-                                        // animationDuration={200}
-                                        // animationEasing="ease-out"
-                                        // center={[50, 50]}
-                                        // lengthAngle={360}
-                                        // lineWidth={40}
                                         data={data}
                                         paddingAngle={0}
                                         radius={50}
-                                        // rounded
                                         startAngle={0}
                                         viewBoxSize={[100, 100]}
                                         labelPosition={65}
@@ -122,43 +151,46 @@ const QueryEndDetails = (props) => {
                 <div className="right-vote-info">{query.TotalVotes} Votes</div>
                 <div className="coment-section">
                     <div className="comment-section-inner flex-box">
-                        <div className="comment-user-img"><img src="assets/images/profile-img.jpg" alt="" /></div>
+                        <div className="comment-user-img"><img src={userInfo.image} alt="" /></div>
                         <div className="comment-field flex-box">
-                            <input type="text" placeholder="write your comments here...." name="" />
+                            <input type="text" placeholder="write your comments here...." name="Comment"
+                                onChange={(e) => onInputChange(e)} />
                             <div className="flex-box comment-option">
-                                <span className="camera"><a href="/abc"><img src="assets/images/photo-camera.png" alt="" /></a></span>
-                                <span className="emoji"><a href="/abc"><img src="assets/images/smile.png" alt="" /></a></span>
-                                <button className="post-comment-btn" type="button"><i className="fa fa-paper-plane" aria-hidden="true"></i> Add Comment</button>
+                                <span className="camera"><a href="/"><img src="assets/images/photo-camera.png" alt="" /></a></span>
+                                <span className="emoji"><a href="/"><img src="assets/images/smile.png" alt="" /></a></span>
+                                <button className="post-comment-btn" type="button"
+                                    onClick={() => addComment(comment, query.QueryId, userInfo.id)}>
+                                    <i className="fa fa-paper-plane" aria-hidden="true"></i>
+                                    Add Comment
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="comments-list">
-                    <div className="comments-list-inner">
-                        <div className="query-head d-flex">
-                            <span className="profile-img"><img src="assets/images/user-placeholder-img.jpg" alt="" /></span>
-                            <div className="about-query-info">
-                                <div className="small-title">John Doe <span className="credential-info">Businessman .</span></div>
-                                <div className="query-shared-by">Hi, I am intrigued by the answer you gave. Do you have any research source that says these materials are more eco friendly? I adore these flooring options myself as I too am a Architect. But the thing is these natural stones are quarried from various mines. The whole process is very energy intensive. Not to mention, post quarrying phase where the stones are broken down is also energy intensive with a lot of wastage.</div>
-                                <div className="comment-cta flex-box">
-                                    <div className="comment-react flex-box"><img className="outline-icon" src="assets/images/like_outline-icon.svg" alt="" /><img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" /> Like . <span className="likes"> 8</span></div>
-                                    <div className="comment-react flex-box"><span><img src="assets/images/replay-arrow.png" alt="" /></span> Reply</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="comments-list-inner replay-comment">
-                            <div className="query-head d-flex" style={{ marginBottom: '0px' }}>
-                                <span className="profile-img"><img src="assets/images/profile-img.jpg" alt="" /></span>
+                    {getComment && getComment.map((comment) => (
+                        <div className="comments-list-inner">
+                            <div className="query-head d-flex">
+                                <span className="profile-img"><img src={comment.UserDetails[0].Image} alt="" /></span>
                                 <div className="about-query-info">
-                                    <div className="small-title">John Doe <span className="credential-info">Businessman .</span></div>
-                                    <div className="query-shared-by">Hi, I am intrigued by the answer you gave. Do you have any research source that says these materials are more eco friendly?</div>
+                                    <div className="small-title">{comment.UserDetails[0].FirstName} {comment.UserDetails[0].LastName}
+                                        <span className="credential-info">Engineer.</span></div>
+
+                                    <div className="query-shared-by">{comment.Comment}</div>
                                     <div className="comment-cta flex-box">
-                                        <div className="comment-react flex-box"><img className="outline-icon" src="assets/images/like_outline-icon.svg" alt="" /><img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" /> Like . <span className="likes"> 8</span></div>
+                                        <div className="comment-react flex-box"
+                                            onClick={() => likeDislikeComment(query.QueryId, userInfo.id, comment._id)}>
+                                            <img className="outline-icon" src="assets/images/like_outline-icon.svg" alt="" />
+                                            <img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" />Like. &nbsp;
+                                            <span className="likes"> {comment.TotalLikes}</span>
+                                        </div>
+                                        {/* <div className="comment-react flex-box"><span>
+                                            <img src="assets/images/replay-arrow.png" alt="" /></span> Reply</div> */}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div >
             </div>
         </div>

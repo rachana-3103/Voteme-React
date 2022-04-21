@@ -43,7 +43,7 @@ const Content = () => {
                             <Routes>
                                 <Route exact path='/createQuery' element={<CreateQuery />} />
                                 <Route exact path='/my-profile' element={<MyProfile />} />
-                                <Route exact path='/queryDetails' element={<QueryDetails data={data} />} />
+                                <Route exact path='/queryDetails' element={<QueryDetails data={data} setData={setData} />} />
                                 <Route exact path='/queryEndDetails' element={<QueryEndDetails data={data} />} />
                                 <Route exact path="/query/:id" element={<AllQuery />} />
                                 <Route exact path='/home' element={<Home QueryData={QueryData} CategoryShowHide={CategoryShowHide} />} />

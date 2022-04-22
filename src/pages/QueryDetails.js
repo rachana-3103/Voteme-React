@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { AuthData } from '../helper/AuthData';
 import Voted from './Voted';
 import ToastMessage from "../helper/ToastMessage";
 
 const QueryDetails = (props) => {
+    if (props.data) {
+        localStorage.setItem("query", JSON.stringify(props.data._id));
+    }
+    const id = JSON.parse(localStorage.getItem("query"));
     const userInfo = AuthData();
-    const navigate = useNavigate();
-    const [comment, setComment] = useState();
+    const [comment, setComment] = useState('');
     const [getComment, setGetComment] = useState();
-
+    const [like, setLike] = useState([]);
+    const [user, setUser] = useState({
+        FirstName: "",
+        LastName: "",
+        Image: "",
+        _id: ''
+    });
+    const { FirstName, LastName, Image, _id } = user;
+    const loadUser = async () => {
+        let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
+        setUser(result.data.Data);
+    }
     const [query, setQuery] = useState({
         UserDetails: "",
         Category: [],
@@ -26,12 +39,12 @@ const QueryDetails = (props) => {
     });
 
     const getQueryByQueryId = async () => {
-        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.data._id}`, { headers: userInfo.header });
+        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${id}`, { headers: userInfo.header });
         setQuery(queryObj.data.Data);
     }
 
     const getCommentById = async () => {
-        const commentObj = await axios.get(`http://localhost:8080/voteme/${props.data._id}/getComments`, { headers: userInfo.header });
+        const commentObj = await axios.get(`http://localhost:8080/voteme/${id}/getComments`, { headers: userInfo.header });
         if (commentObj.data.data[0].Records[0]) {
             setGetComment(commentObj.data.data[0].Records[0].replay);
         }
@@ -41,10 +54,31 @@ const QueryDetails = (props) => {
         setComment({ ...comment, [e.target.name]: e.target.value });
     };
 
-    useEffect(() => {
-        getQueryByQueryId();
-        getCommentById();
-    }, []);
+    const addLikeOrDisLike = async (query, queryFlag) => {
+        let likeData;
+        const queryNewObj = { ...query };
+        const queryLike = {
+            Like: queryFlag,
+            LikedBy: user._id,
+        };
+        try {
+            likeData = await axios.post(
+                `http://localhost:8080/voteme/${query.QueryId}/likeordislike`,
+                queryLike,
+                { headers: userInfo.header }
+            );
+            const likesArray = [...like];
+            queryNewObj.TotalLikes = likeData.data.Total.TotalLikes;
+            queryNewObj.TotalDisLikes = likeData.data.Total.TotalDisLikes;
+            likesArray = queryNewObj;
+            setLike(likesArray);
+        } catch (error) {
+            if (likeData.data.Error) {
+                ToastMessage(likeData.data.Error.Message, false);
+            }
+        }
+        await getQueryByQueryId();
+    };
 
     const onVoted = async (option, optionId, userId, queryId) => {
         const vote = { voted: true, option, optionId, userId, queryId };
@@ -58,25 +92,40 @@ const QueryDetails = (props) => {
         if (addCommentData.data.Error) {
             ToastMessage(addCommentData.data.Error.Message, false);
         }
-        navigate('/home');
+        await getQueryByQueryId();
+        await getCommentById();
     }
-
     const likeDislikeComment = async (queryId, userId, commentId) => {
         const body = { Like: true, LikedBy: userId }
         const obj = await axios.post(`http://localhost:8080/voteme/${queryId}/comment/${commentId}/likeordislike`,
             body, { headers: userInfo.header });
         if (obj.data.message) {
             ToastMessage(obj.data.message, true);
+            await getQueryByQueryId();
             await getCommentById();
         } else {
             ToastMessage(obj.data.Error.Message, false);
         }
+    }
+    const deleteComment = async (queryId, commentId) => {
+        const obj = await axios.delete(`http://localhost:8080/voteme/${queryId}/comment/${commentId}`, { headers: userInfo.header });
+        if (obj.data.message) {
+            ToastMessage(obj.data.message, true);
+        }
+        await getCommentById();
+        await getQueryByQueryId();
     }
 
     const categoryArray = [];
     query.Category.forEach((category) => {
         categoryArray.push(category.CategoryName);
     });
+
+    useEffect(() => {
+        getQueryByQueryId();
+        getCommentById();
+        loadUser();
+    }, []);
 
     return (
         <div className="my-queries query-details-page">
@@ -110,10 +159,14 @@ const QueryDetails = (props) => {
                         </div>
                     </div>
                     <div className="bottom-right-options">
-                        <span className="like"><img className="outline-icon" src="assets/images/up-arrow-outline.svg" alt="" />
-                            <img className="fill-icon" src="assets/images/up-arrow-fill.svg" alt="" /> {query.TotalLikes}</span>
-                        <span className="dislike"><img className="outline-icon" src="assets/images/down-arrow-outline.svg" alt="" />
-                            <img className="fill-icon" src="assets/images/down-arrow-fill.svg" alt="" />{query.TotalDisLikes}</span>
+                        <span className="like" onClick={() => addLikeOrDisLike(query, true)
+                        }><img className="outline-icon" src="assets/images/up-arrow-outline.svg" alt="" />
+                            <img className="fill-icon" src="assets/images/up-arrow-fill.svg" alt="" />
+                            {query.TotalLikes}</span>
+                        <span className="dislike" onClick={() => addLikeOrDisLike(query, false)
+                        }><img className="outline-icon" src="assets/images/down-arrow-outline.svg" alt="" />
+                            <img className="fill-icon" src="assets/images/down-arrow-fill.svg" alt="" />
+                            {query.TotalDisLikes}</span>
                         <span className="comments"><img src="assets/images/speech-bubble-outline.svg" alt="" /> {query.TotalComments}</span>
                         <span className="viewers"><img src="assets/images/view-outline.svg" alt="" /> {query.TotalViews}</span>
                     </div>
@@ -154,9 +207,16 @@ const QueryDetails = (props) => {
                                             <img className="outline-icon" src="assets/images/like_outline-icon.svg" alt="" />
                                             <img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" />Like. &nbsp;
                                             <span className="likes"> {comment.TotalLikes}</span>
+
                                         </div>
-                                        {/* <div className="comment-react flex-box"><span> */}
-                                            {/* <img src="assets/images/replay-arrow.png" alt="" /></span> Reply</div> */}
+                                        {/* <div className="comment-react flex-box">
+                                            <span onClick={() => commentReply(comment._id)}><img src="assets/images/replay-arrow.png" alt=""
+                                            />Reply</span>
+                                        </div> */}
+                                        <div>
+                                            <i class="material-icons"
+                                                onClick={() => { deleteComment(query.QueryId, comment._id) }}>delete</i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

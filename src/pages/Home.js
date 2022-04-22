@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AuthData } from "../helper/AuthData";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ToastMessage from "../helper/ToastMessage";
 import moment from "moment";
 
@@ -212,7 +212,6 @@ const Home = (props) => {
                                     (likeObj) => likeObj._id === queryData._id
                                   )?.TotalLikes || 0}
                                 </span>
-
                                 <span
                                   className="dislike"
                                   onClick={() =>
@@ -234,9 +233,9 @@ const Home = (props) => {
                                       disLikeObj._id === queryData._id
                                   )?.TotalDisLikes || 0}
                                 </span>
-                                <span className="comments"  onClick={() =>
-                                    getQueryById(queryData)
-                                  }>
+                                <span className="comments" onClick={() =>
+                                  getQueryById(queryData)
+                                }>
                                   <img
                                     src="assets/images/speech-bubble-outline.svg"
                                     alt=""

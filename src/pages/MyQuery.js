@@ -3,19 +3,15 @@ import axios from "axios";
 import { AuthData } from "../helper/AuthData";
 import CreateQuery from "./CreateQuery";
 import ToastMessage from '../helper/ToastMessage';
-import { useNavigate } from "react-router-dom";
 
-const MyQuery = (props) => {
-  const navigate = useNavigate();
+const MyQuery = () => {
   const [query, setQuery] = useState([]);
   const [editFlag, setEditFlag] = useState(false);
-  const [queryId, setQueryId] = useState();
   const userInfo = AuthData();
   let percentage = 0;
 
   useEffect(() => {
     loadMyQuery();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadMyQuery = async () => {
@@ -25,9 +21,8 @@ const MyQuery = (props) => {
     setQuery(queryData.data.Data[0].Records);
   };
 
-  const editQuery = (editFlag, queryId) => {
+  const editQuery = (editFlag) => {
     setEditFlag(editFlag);
-    setQueryId(queryId);
   }
 
   const deleteQuery = async (queryId) => {
@@ -40,22 +35,6 @@ const MyQuery = (props) => {
     <div className="my-queries">
       {editFlag && < CreateQuery query={query} />}
       {!editFlag && <div className="query-tabing">
-        <div className="tab-listing">
-          <ul className="tabbing-nav">
-            <li className="active-tab">
-              <a href="#recent-queries">Recent Queries</a>
-            </li>
-            <li>
-              <a href="#top-queries">Top 10 Queries</a>
-            </li>
-            <li>
-              <a href="#popular-queries">Popular Queries</a>
-            </li>
-            <li>
-              <a href="#all-queries">All Queries</a>
-            </li>
-          </ul>
-        </div>
         <div className="tabs-content-cover">
           <div id="recent-queries" className="tab-content">
             {query.length > 0 ? (
@@ -119,13 +98,6 @@ const MyQuery = (props) => {
                           />{" "}
                           {queryData.TotalDisLikes}
                         </span>
-                        {/* <span className="comments" onC>
-                          <img
-                            src="assets/images/speech-bubble-outline.svg"
-                            alt=""
-                          />{" "}
-                          {queryData.TotalComments}
-                        </span> */}
                         <span className="viewers">
                           <img src="assets/images/view-outline.svg" alt="" /> {queryData.TotalViews}
                         </span>
@@ -134,7 +106,7 @@ const MyQuery = (props) => {
                         Pole End Time {queryData.EndDate}
                       </div>
                       <div className="query-cta-btns">
-                        <span className="edit" onClick={() => editQuery(true, queryData._id)}>
+                        <span className="edit" onClick={() => editQuery(true)}>
                           <img src="assets/images/edit.svg" alt="" />
                         </span>
                         <span className="delete" onClick={() => deleteQuery(queryData._id)}>
@@ -144,7 +116,7 @@ const MyQuery = (props) => {
                     </div>
                   </div>
                 </div>
-                )))
+              )))
               : (
                 <div id="all-queries">
                   <div className="tab-content-list">

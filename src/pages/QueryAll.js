@@ -1,31 +1,18 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthData } from '../helper/AuthData';
 
-const AllQuery = () => {
-    const location = useLocation();
+const QueryAll = () => {
     const userInfo = AuthData();
-    let id;
-    if (location.pathname == '/queryAll') {
-        id = "1";
-    } else if (location.pathname == '/queryRecent') {
-        id = "2";
-    } else if (location.pathname == '/queryTop10') {
-        id = "3";
-    } else if(location.pathname=='/queryPopular') {
-        id = "4";
-    }
     let percentage = 0;
     const [query, setQuery] = useState([]);
     useEffect(() => {
         loadQuery();
-console.log(id);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    },[]);
 
     const loadQuery = async () => {
-        const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=${id}`, { headers: userInfo.header })
+        const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=1`, { headers: userInfo.header })
         setQuery(query.data.Data[0].Records);
     }
 
@@ -35,10 +22,13 @@ console.log(id);
                 <div className="query-tabing">
                     <div className="tab-listing">
                         <ul className="tabbing-nav">
-                            <li className={location.pathname === "/queryAll" ? "active-tab" : ""}><Link to='/queryAll'>All Queries</Link></li>
-                            <li className={location.pathname === "/queryRecent" ? "active-tab" : ""}><Link to={`/queryRecent`} >Recent Queries</Link></li>
-                            <li className={location.pathname === "/queryTop10" ? "active-tab" : ""}><Link to={`/queryTop10`}>Top 10 Queries</Link></li>
-                            <li className={location.pathname === "/queryPopular" ? "active-tab" : ""}><Link to={`/queryPopular`} >Popular Queries</Link></li>
+                        <div className="small-title" style={{ textAlign: "center" }}><h4>All Queries</h4></div>
+                            
+                            {/* <li className={location.pathname == "/queryAll" ? "active-tab" : ""}>
+                                <NavLink to='/queryAll'>All Queries</NavLink></li> */}
+                            {/* <li className={location.pathname === "/queryRecent" ? "active-tab" : ""}><Link to='/queryRecent' >Recent Queries</Link></li> */}
+                            {/* <li className={location.pathname === "/queryTop10" ? "active-tab" : ""}><Link to='/queryTop10'>Top 10 Queries</Link></li> */}
+                            {/* <li className={location.pathname === "/queryPopular" ? "active-tab" : ""}><Link to='/queryPopular' >Popular Queries</Link></li> */}
                         </ul>
                     </div>
                     <div className="tabs-content-cover">
@@ -95,4 +85,4 @@ console.log(id);
     );
 }
 
-export default AllQuery;
+export default QueryAll;

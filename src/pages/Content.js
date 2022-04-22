@@ -13,9 +13,13 @@ import SelectCategory from './SelectCategory';
 import AllQuery from './AllQuery';
 import Layout from '../component/Layout';
 import QueryDetails from './QueryDetails';
+import QueryAll from './QueryAll';
+import QueryRecent from './QueryRecent';
+import QueryTop10 from './QueryTop10';
+import QueryPopular from './QueryPopular';
 
 const withHeader = ['/my-profile', '/home', '/queryDetails', '/queryEndDetails', '/my-query', '/terms-condition',
-    '/help', '/createQuery', '/query/all', '/query/recent', '/query/top-10', '/query/popular'];
+    '/help', '/createQuery', '/queryAll', '/queryRecent', '/queryTop10', '/queryPopular'];
 
 const Content = () => {
     const location = useLocation();
@@ -28,6 +32,7 @@ const Content = () => {
     const QueryData = async (data) => {
         setData(data);
     }
+
     return (
         <Layout>
             <section className="query-banner-img">
@@ -37,7 +42,7 @@ const Content = () => {
                     }
                     <div className="query-inner d-flex">
                         {
-                            withHeader.includes(location.pathname) && < SideBar />
+                                withHeader.includes(location.pathname) && < SideBar />
                         }
                         <div className="right-container" >
                             <Routes>
@@ -45,7 +50,11 @@ const Content = () => {
                                 <Route exact path='/my-profile' element={<MyProfile />} />
                                 <Route exact path='/queryDetails' element={<QueryDetails data={data} setData={setData} />} />
                                 <Route exact path='/queryEndDetails' element={<QueryEndDetails data={data} />} />
-                                <Route exact path="/query/:id" element={<AllQuery />} />
+                                {/* <Route exact path="/queryAll" element={<AllQuery />} /> */}
+                                <Route exact path="/queryAll" element={<QueryAll />} />
+                                <Route exact path="/queryRecent" element={<QueryRecent />} />
+                                <Route exact path="/queryTop10" element={<QueryTop10 />} />
+                                <Route exact path="/queryPopular" element={<QueryPopular />} />
                                 <Route exact path='/home' element={<Home QueryData={QueryData} CategoryShowHide={CategoryShowHide} />} />
                                 <Route exact path='/my-query' element={<MyQuery />} />
                                 <Route exact path='/selectCategory' element={<SelectCategory />} />

@@ -159,7 +159,7 @@ const Home = (props) => {
                             <div className="query-footer flex-box">
                               {queryData.IsVoted &&
                                 queryData.EndDate >
-                                moment().format("DD/MM/YYYY hh:mm:A") && (
+                                moment().format("DD/MM/YYYY") && (
                                   <div className="submit-btn orange-btn">
                                     <button
                                       className="desabel-btn"
@@ -171,7 +171,7 @@ const Home = (props) => {
                                 )}
                               {!queryData.IsVoted &&
                                 queryData.EndDate >
-                                moment().format("DD/MM/YYYY hh:mm:A") && (
+                                moment().format("DD/MM/YYYY") && (
                                   <div className="submit-btn">
                                     <button
                                       type="submit"
@@ -182,7 +182,7 @@ const Home = (props) => {
                                   </div>
                                 )}
                               {queryData.EndDate <
-                                moment().format("DD/MM/YYYY hh:mm:A") && (
+                                moment().format("DD/MM/YYYY") && (
                                   <span
                                     className="vote-count"
                                     onClick={() => viewQueryId(queryData._id)}
@@ -252,14 +252,14 @@ const Home = (props) => {
                               </div>
                             </div>
                             {queryData.EndDate >
-                              moment().format("DD/MM/YYYY hh:mm:A") && (
+                              moment().format("DD/MM/YYYY") && (
                                 <div className="poll-end-time">
                                   Poll End Date {queryData.EndDate}
                                 </div>
                               )}
 
                             {queryData.EndDate <
-                              moment().format("DD/MM/YYYY hh:mm:A") && (
+                              moment().format("DD/MM/YYYY") && (
                                 <div class="poll-end-time poll-ended">
                                   Poll Ended
                                 </div>

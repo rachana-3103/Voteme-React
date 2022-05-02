@@ -24,6 +24,7 @@ const MyQuery = () => {
 
   const editQuery = async (queryId) => {
     const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${queryId}`, { headers: userInfo.header });
+    queryObj.data.Data.EndDate = moment(queryObj.data.Data.EndDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
     setEditFlag(queryObj.data.Data);
   }
 

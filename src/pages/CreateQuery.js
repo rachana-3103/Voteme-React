@@ -82,7 +82,11 @@ const CreateQuery = (props) => {
   };
 
   const onInputChange = (e) => {
-    setQuery({ ...query, [e.target.name]: e.target.value });
+    if (e.target.name == 'EndDate') {
+      setQuery({ ...query, [e.target.name]: moment(e.target.value).format('YYYY-MM-DD') });
+    } else {
+      setQuery({ ...query, [e.target.name]: e.target.value });
+    }
   };
 
   const optionAdd = () => {
@@ -188,28 +192,23 @@ const CreateQuery = (props) => {
         OptionSix: OptionSix ? OptionSix : '',
         ChartOption: ChartOption,
         IsPublic: IsPublic || false,
-        EndDate: EndDate,
+        EndDate: moment(EndDate).format('DD/MM/YYYY'),
         Category: Category,
         OptionType: 1,
       };
       for (const key in queryObj) {
-        if (key === "EndDate") {
-          queryObj[key] = moment(queryObj.EndDate, "YYYY-MM-DD").format(
-            "DD/MM/YYYY hh:mm A"
-          );
-        }
         if (queryObj[key] !== '') {
           bodyFormData.append(key, queryObj[key]);
         }
       }
-
+      
       Object.assign(userInfo.header, {
         "Content-Type": "multipart/form-data",
       });
 
       let apiUrl;
-      if (props.edit && props.queryId) {
-        apiUrl = `http://localhost:8080/voteme/editquery/${props.queryId}`;
+      if (props.query) {
+        apiUrl = `http://localhost:8080/voteme/editquery/${props.query.QueryId}`;
         await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
       } else {
         apiUrl = "http://localhost:8080/voteme/createpoll";
@@ -351,7 +350,7 @@ const CreateQuery = (props) => {
               <input
                 id="text"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[0]}
                 type="radio"
                 checked={ChartOption === '1' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -365,7 +364,7 @@ const CreateQuery = (props) => {
               <input
                 id="image"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[1]}
                 type="radio"
                 checked={ChartOption === '2' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -379,7 +378,7 @@ const CreateQuery = (props) => {
               <input
                 id="audio"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[2]}
                 type="radio"
                 checked={ChartOption === '3' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -393,7 +392,7 @@ const CreateQuery = (props) => {
               <input
                 id="video"
                 name="ChartOption"
-                value={ChartOption}
+                value={ChartOption[3]}
                 type="radio"
                 checked={ChartOption === '4' ? 'checked' : null}
                 onChange={(e) => onInputChange(e)}
@@ -448,7 +447,6 @@ const CreateQuery = (props) => {
           <div className="query-end-inner flex-box">
             <h2 className="section-title">Query end time</h2>
             <div className="select-date">
-              {console.log('.............End date', EndDate)}
               <input
                 type="date"
                 name="EndDate"

@@ -11,7 +11,7 @@ const QueryDetails = (props) => {
     const id = JSON.parse(localStorage.getItem("query"));
     const userInfo = AuthData();
     const [comment, setComment] = useState('');
-    const [getComment, setGetComment] = useState();
+    const [getComment, setGetComment] = useState([]);
     const [like, setLike] = useState([]);
     const [user, setUser] = useState({
         FirstName: "",
@@ -19,7 +19,6 @@ const QueryDetails = (props) => {
         Image: "",
         _id: ''
     });
-    const { FirstName, LastName, Image, _id } = user;
     const loadUser = async () => {
         let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
         setUser(result.data.Data);
@@ -45,13 +44,16 @@ const QueryDetails = (props) => {
 
     const getCommentById = async () => {
         const commentObj = await axios.get(`http://localhost:8080/voteme/${id}/getComments`, { headers: userInfo.header });
-        if (commentObj.data.data[0].Records[0]) {
+
+        if (commentObj.data.data[0].Records[0] && commentObj.data.data[0].Records[0].replay.length > 0) {
             setGetComment(commentObj.data.data[0].Records[0].replay);
+        } else {
+            setGetComment([]);
         }
     }
 
     const onInputChange = (e) => {
-        setComment({ ...comment, [e.target.name]: e.target.value });
+        setComment(e.target.value);
     };
 
     const addLikeOrDisLike = async (query, queryFlag) => {
@@ -67,7 +69,7 @@ const QueryDetails = (props) => {
                 queryLike,
                 { headers: userInfo.header }
             );
-            const likesArray = [...like];
+            let likesArray = [...like];
             queryNewObj.TotalLikes = likeData.data.Total.TotalLikes;
             queryNewObj.TotalDisLikes = likeData.data.Total.TotalDisLikes;
             likesArray = queryNewObj;
@@ -86,12 +88,13 @@ const QueryDetails = (props) => {
     }
 
     const addComment = async (Comment, queryId, userId) => {
-        const body = { Comment: Comment.Comment, CommentedBy: userId }
+        const body = { Comment: Comment, CommentedBy: userId }
         const addCommentData = await axios.post(`http://localhost:8080/voteme/${queryId}/createComments`,
             body, { headers: userInfo.header });
         if (addCommentData.data.Error) {
             ToastMessage(addCommentData.data.Error.Message, false);
         }
+        setComment('');
         await getQueryByQueryId();
         await getCommentById();
     }
@@ -107,6 +110,7 @@ const QueryDetails = (props) => {
             ToastMessage(obj.data.Error.Message, false);
         }
     }
+
     const deleteComment = async (queryId, commentId) => {
         const obj = await axios.delete(`http://localhost:8080/voteme/${queryId}/comment/${commentId}`, { headers: userInfo.header });
         if (obj.data.message) {
@@ -177,8 +181,8 @@ const QueryDetails = (props) => {
                     <div className="comment-section-inner flex-box">
                         <div className="comment-user-img"><img src={userInfo.image} alt="" /></div>
                         <div className="comment-field flex-box">
-                            <input type="text" placeholder="write your comments here...." name="Comment"
-                                onChange={(e) => onInputChange(e)} />
+                            <input type="text" placeholder="write your comments here...." name="Comment" value={comment}
+                                onChange={onInputChange} />
                             <div className="flex-box comment-option">
                                 <span className="camera"><a href="/"><img src="assets/images/photo-camera.png" alt="" /></a></span>
                                 <span className="emoji"><a href="/"><img src="assets/images/smile.png" alt="" /></a></span>
@@ -192,36 +196,39 @@ const QueryDetails = (props) => {
                     </div>
                 </div>
                 <div className="comments-list">
-                    {getComment && getComment.map((comment) => (
-                        <div className="comments-list-inner">
-                            <div className="query-head d-flex">
-                                <span className="profile-img"><img src={comment.UserDetails[0].Image} alt="" /></span>
-                                <div className="about-query-info">
-                                    <div className="small-title">{comment.UserDetails[0].FirstName} {comment.UserDetails[0].LastName}
-                                        <span className="credential-info">Engineer.</span></div>
+                    {
+                        getComment && getComment.length > 0 ?
+                            getComment.map((comment) => (
+                                <div className="comments-list-inner">
+                                    <div className="query-head d-flex">
+                                        <span className="profile-img"><img src={comment.UserDetails[0].Image} alt="" /></span>
+                                        <div className="about-query-info">
+                                            <div className="small-title">{comment.UserDetails[0].FirstName} {comment.UserDetails[0].LastName}
+                                                <span className="credential-info">Engineer.</span></div>
+                                            <div className="query-shared-by">{comment.Comment}</div>
+                                            <div className="comment-cta flex-box">
+                                                <div className="comment-react flex-box"
+                                                    onClick={() => likeDislikeComment(query.QueryId, userInfo.id, comment._id)}>
+                                                    <img className="outline-icon" src="assets/images/like_outline-icon.svg" alt="" />
+                                                    <img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" />Like. &nbsp;
+                                                    <span className="likes"> {comment.TotalLikes}</span>
 
-                                    <div className="query-shared-by">{comment.Comment}</div>
-                                    <div className="comment-cta flex-box">
-                                        <div className="comment-react flex-box"
-                                            onClick={() => likeDislikeComment(query.QueryId, userInfo.id, comment._id)}>
-                                            <img className="outline-icon" src="assets/images/like_outline-icon.svg" alt="" />
-                                            <img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" />Like. &nbsp;
-                                            <span className="likes"> {comment.TotalLikes}</span>
-
-                                        </div>
-                                        {/* <div className="comment-react flex-box">
+                                                </div>
+                                                {/* <div className="comment-react flex-box">
                                             <span onClick={() => commentReply(comment._id)}><img src="assets/images/replay-arrow.png" alt=""
                                             />Reply</span>
                                         </div> */}
-                                        <div>
-                                            <i class="material-icons"
-                                                onClick={() => { deleteComment(query.QueryId, comment._id) }}>delete</i>
+                                                <div>
+                                                    <i class="material-icons" style={{ cursor: 'pointer' }}
+                                                        onClick={() => { deleteComment(query.QueryId, comment._id) }}>delete</i>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    ))}
+                            ))
+                            : <div> No Comment Found</div>
+                    }
                 </div >
             </div >
         </div >

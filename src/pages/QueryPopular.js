@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { AuthData } from '../helper/AuthData';
 
 const QueryPopular = () => {
@@ -12,7 +11,7 @@ const QueryPopular = () => {
     },[]);
 
     const loadQuery = async () => {
-        const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=2`, { headers: userInfo.header })
+        const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=4`, { headers: userInfo.header })
         setQuery(query.data.Data[0].Records);
     }
 

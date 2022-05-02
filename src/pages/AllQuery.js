@@ -7,22 +7,20 @@ const AllQuery = () => {
     const location = useLocation();
     const userInfo = AuthData();
     let id;
-    if (location.pathname == '/queryAll') {
+    if (location.pathname === '/queryAll') {
         id = "1";
-    } else if (location.pathname == '/queryRecent') {
+    } else if (location.pathname === '/queryRecent') {
         id = "2";
-    } else if (location.pathname == '/queryTop10') {
+    } else if (location.pathname === '/queryTop10') {
         id = "3";
-    } else if(location.pathname=='/queryPopular') {
+    } else if(location.pathname ==='/queryPopular') {
         id = "4";
     }
     let percentage = 0;
     const [query, setQuery] = useState([]);
     useEffect(() => {
         loadQuery();
-console.log(id);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    }, [id, loadQuery]);
 
     const loadQuery = async () => {
         const query = await axios.get(`http://localhost:8080/voteme/query?searchBy=${id}`, { headers: userInfo.header })

@@ -10,7 +10,7 @@ import Help from '../pages/Help'
 import CreateQuery from '../pages/CreateQuery';
 import Category from './Category';
 import SelectCategory from './SelectCategory';
-import AllQuery from './AllQuery';
+// import AllQuery from './AllQuery';
 import Layout from '../component/Layout';
 import QueryDetails from './QueryDetails';
 import QueryAll from './QueryAll';

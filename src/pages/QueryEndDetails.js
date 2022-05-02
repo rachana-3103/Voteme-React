@@ -3,29 +3,42 @@ import axios from 'axios';
 import { AuthData } from '../helper/AuthData';
 import { useNavigate } from 'react-router-dom';
 import { PieChart } from 'react-minimal-pie-chart';
-import BarChart from 'react-bar-chart';
-import { Bar } from "react-chartjs-2";
 import ToastMessage from "../helper/ToastMessage";
 
 const QueryEndDetails = (props) => {
     const navigate = useNavigate();
+    if (props.data) {
+        localStorage.setItem("query", JSON.stringify(props.data));
+    }
+    const id = JSON.parse(localStorage.getItem("query"));
     const userInfo = AuthData();
     const [comment, setComment] = useState();
     const [getComment, setGetComment] = useState();
+    const [like, setLike] = useState([]);
+    const [user, setUser] = useState({
+        FirstName: "",
+        LastName: "",
+        Image: "",
+        _id: ''
+    });
     const [query, setQuery] = useState({
         UserDetails: "",
         Category: [],
         Options: [],
     });
     const [data, setData] = useState([]);
-
+    const loadUser = async () => {
+        let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
+        setUser(result.data.Data);
+    }
     useEffect(() => {
         getQueryByQueryId();
         getCommentById();
+        loadUser();
     }, []);
 
     const getQueryByQueryId = async () => {
-        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${props.data}`, { headers: userInfo.header });
+        const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${id}`, { headers: userInfo.header });
         let data = [];
         queryObj.data.Data.Options.map((obj) => {
             var randomColor = "#000000".replace(/0/g, function () {
@@ -42,23 +55,27 @@ const QueryEndDetails = (props) => {
         setQuery(queryObj.data.Data);
     }
     const getCommentById = async () => {
-        const commentObj = await axios.get(`http://localhost:8080/voteme/${props.data}/getComments`, { headers: userInfo.header });
-        if (commentObj.data.data[0].Records[0]) {
+        const commentObj = await axios.get(`http://localhost:8080/voteme/${id}/getComments`, { headers: userInfo.header });
+        if (commentObj.data.data[0].Records[0] && commentObj.data.data[0].Records[0].replay.length > 0) {
             setGetComment(commentObj.data.data[0].Records[0].replay);
+        } else {
+            setGetComment([]);
         }
     }
     const onInputChange = (e) => {
-        setComment({ ...comment, [e.target.name]: e.target.value });
+        setComment(e.target.value);
     };
 
     const addComment = async (Comment, queryId, userId) => {
-        const body = { Comment: Comment.Comment, CommentedBy: userId }
+        const body = { Comment:Comment, CommentedBy: userId }
         const addCommentData = await axios.post(`http://localhost:8080/voteme/${queryId}/createComments`,
             body, { headers: userInfo.header });
         if (addCommentData.data.Error) {
             ToastMessage(addCommentData.data.Error.Message, false);
         }
-        navigate('/home');
+        setComment('');
+        getQueryByQueryId();
+        getCommentById();
     }
 
     const likeDislikeComment = async (queryId, userId, commentId) => {
@@ -67,12 +84,46 @@ const QueryEndDetails = (props) => {
             body, { headers: userInfo.header });
         if (obj.data.message) {
             ToastMessage(obj.data.message, true);
-            await getCommentById();
         } else {
             ToastMessage(obj.data.Error.Message, false);
         }
+        getQueryByQueryId();
+        getCommentById();
     }
 
+    const addLikeOrDisLike = async (query, queryFlag) => {
+        let likeData;
+        const queryNewObj = { ...query };
+        const queryLike = {
+            Like: queryFlag,
+            LikedBy: user._id,
+        };
+        try {
+            likeData = await axios.post(
+                `http://localhost:8080/voteme/${query.QueryId}/likeordislike`,
+                queryLike,
+                { headers: userInfo.header }
+            );
+            let likesArray = [...like];
+            queryNewObj.TotalLikes = likeData.data.Total.TotalLikes;
+            queryNewObj.TotalDisLikes = likeData.data.Total.TotalDisLikes;
+            likesArray = queryNewObj;
+            setLike(likesArray);
+        } catch (error) {
+            if (likeData.data.Error) {
+                ToastMessage(likeData.data.Error.Message, false);
+            }
+        }
+        await getQueryByQueryId();
+    };
+    const deleteComment = async (queryId, commentId) => {
+        const obj = await axios.delete(`http://localhost:8080/voteme/${queryId}/comment/${commentId}`, { headers: userInfo.header });
+        if (obj.data.message) {
+            ToastMessage(obj.data.message, true);
+        }
+        await getCommentById();
+        await getQueryByQueryId();
+    }
     const categoryArray = [];
     query.Category.forEach((category) => {
         categoryArray.push(category.CategoryName);
@@ -139,9 +190,11 @@ const QueryEndDetails = (props) => {
                         </div>
                     </div>
                     <div className="bottom-right-options">
-                        <span className="like"><img className="outline-icon" src="assets/images/up-arrow-outline.svg" alt="" />
+                        <span className="like" onClick={() => addLikeOrDisLike(query, true)
+                        }><img className="outline-icon" src="assets/images/up-arrow-outline.svg" alt="" />
                             <img className="fill-icon" src="assets/images/up-arrow-fill.svg" alt="" /> {query.TotalLikes}</span>
-                        <span className="dislike"><img className="outline-icon" src="assets/images/down-arrow-outline.svg" alt="" />
+                        <span className="dislike" onClick={() => addLikeOrDisLike(query, false)
+                        }><img className="outline-icon" src="assets/images/down-arrow-outline.svg" alt="" />
                             <img className="fill-icon" src="assets/images/down-arrow-fill.svg" alt="" />{query.TotalDisLikes}</span>
                         <span className="comments"><img src="assets/images/speech-bubble-outline.svg" alt="" /> {query.TotalComments}</span>
                         <span className="viewers"><img src="assets/images/view-outline.svg" alt="" /> {query.TotalViews}</span>
@@ -153,8 +206,8 @@ const QueryEndDetails = (props) => {
                     <div className="comment-section-inner flex-box">
                         <div className="comment-user-img"><img src={userInfo.image} alt="" /></div>
                         <div className="comment-field flex-box">
-                            <input type="text" placeholder="write your comments here...." name="Comment"
-                                onChange={(e) => onInputChange(e)} />
+                            <input type="text" placeholder="write your comments here...." name="Comment" value={comment}
+                                onChange={onInputChange} />
                             <div className="flex-box comment-option">
                                 <span className="camera"><a href="/"><img src="assets/images/photo-camera.png" alt="" /></a></span>
                                 <span className="emoji"><a href="/"><img src="assets/images/smile.png" alt="" /></a></span>
@@ -168,7 +221,7 @@ const QueryEndDetails = (props) => {
                     </div>
                 </div>
                 <div className="comments-list">
-                    {getComment && getComment.map((comment) => (
+                    {  getComment && getComment.length > 0 ? getComment.map((comment) => (
                         <div className="comments-list-inner">
                             <div className="query-head d-flex">
                                 <span className="profile-img"><img src={comment.UserDetails[0].Image} alt="" /></span>
@@ -184,13 +237,17 @@ const QueryEndDetails = (props) => {
                                             <img className="fill-icon" src="assets/images/like_fill-icon.svg" alt="" />Like. &nbsp;
                                             <span className="likes"> {comment.TotalLikes}</span>
                                         </div>
+                                        <div>
+                                            <i class="material-icons" style={{ cursor: 'pointer' }}
+                                                onClick={() => { deleteComment(query.QueryId, comment._id) }}>delete</i>
+                                        </div>
                                         {/* <div className="comment-react flex-box"><span>
                                             <img src="assets/images/replay-arrow.png" alt="" /></span> Reply</div> */}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    )):<div>No Comment Found</div>}
                 </div >
             </div>
         </div>

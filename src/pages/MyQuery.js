@@ -3,16 +3,14 @@ import axios from "axios";
 import { AuthData } from "../helper/AuthData";
 import CreateQuery from "./CreateQuery";
 import ToastMessage from '../helper/ToastMessage';
-
+import moment from "moment";
 const MyQuery = () => {
   const [query, setQuery] = useState([]);
-  const [editFlag, setEditFlag] = useState(false);
+  const [editFlag, setEditFlag] = useState('');
   const userInfo = AuthData();
   let percentage = 0;
 
-  useEffect(() => {
-    loadMyQuery();
-  }, []);
+
 
   const loadMyQuery = async () => {
     let queryData = await axios.get(`http://localhost:8080/voteme/myquery`, {
@@ -20,9 +18,13 @@ const MyQuery = () => {
     });
     setQuery(queryData.data.Data[0].Records);
   };
+  useEffect(() => {
+    loadMyQuery();
+  }, []);
 
-  const editQuery = (editFlag) => {
-    setEditFlag(editFlag);
+  const editQuery = async (queryId) => {
+    const queryObj = await axios.get(`http://localhost:8080/voteme/querydetail/${queryId}`, { headers: userInfo.header });
+    setEditFlag(queryObj.data.Data);
   }
 
   const deleteQuery = async (queryId) => {
@@ -33,7 +35,7 @@ const MyQuery = () => {
 
   return (
     <div className="my-queries">
-      {editFlag && < CreateQuery query={query} />}
+      {editFlag && < CreateQuery query={editFlag} />}
       {!editFlag && <div className="query-tabing">
         <div className="tabs-content-cover">
           <div id="recent-queries" className="tab-content">
@@ -106,7 +108,7 @@ const MyQuery = () => {
                         Pole End Time {queryData.EndDate}
                       </div>
                       <div className="query-cta-btns">
-                        <span className="edit" onClick={() => editQuery(true)}>
+                        <span className="edit" onClick={() => editQuery(queryData._id)}>
                           <img src="assets/images/edit.svg" alt="" />
                         </span>
                         <span className="delete" onClick={() => deleteQuery(queryData._id)}>

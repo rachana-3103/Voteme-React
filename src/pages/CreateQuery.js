@@ -40,16 +40,14 @@ const CreateQuery = (props) => {
 
   const [category, setCategory] = useState([]);
   const [fields, setFields] = useState([]);
+  const [queryCategory, setQueryCategory] = useState([]);
   const { FirstName, LastName, Image } = user;
 
   const loadUserAndCategory = async () => {
     let result = await axios.get(userInfo.apiUrl, { headers: userInfo.header });
     setUser(result.data.Data);
 
-    const categoryData = await axios.get(
-      `http://localhost:8080/voteme/category`,
-      { headers: userInfo.header }
-    );
+    const categoryData = await axios.get(`http://localhost:8080/voteme/category`, { headers: userInfo.header });
     setCategory(categoryData.data.Data);
 
     if (props.query) {
@@ -67,6 +65,11 @@ const CreateQuery = (props) => {
         EndDate: getQuery.EndDate,
         IsPublic: getQuery.IsPublic
       });
+      const categoryArray = [];
+      getQuery.Category.map((obj) => {
+        categoryArray.push(obj._id);
+      })
+      setQueryCategory(categoryArray);
     }
   };
 
@@ -76,9 +79,13 @@ const CreateQuery = (props) => {
   }, []);
 
   const selectCategory = (e) => {
-    const category = [...query.Category];
-    category.push(e.target.value);
-    setQuery({ ...query, Category: category });
+    if (queryCategory.includes(e.target.value)) {
+      queryCategory.splice(queryCategory.indexOf(e.target.value), 1);
+    } else {
+      queryCategory.push(e.target.value);
+    }
+    setQueryCategory(queryCategory);
+    setQuery({ ...query, Category: queryCategory });
   };
 
   const onInputChange = (e) => {
@@ -193,7 +200,7 @@ const CreateQuery = (props) => {
         ChartOption: ChartOption,
         IsPublic: IsPublic || false,
         EndDate: moment(EndDate).format('DD/MM/YYYY'),
-        Category: Category,
+        Category: queryCategory,
         OptionType: 1,
       };
       for (const key in queryObj) {
@@ -201,7 +208,7 @@ const CreateQuery = (props) => {
           bodyFormData.append(key, queryObj[key]);
         }
       }
-      
+
       Object.assign(userInfo.header, {
         "Content-Type": "multipart/form-data",
       });
@@ -209,7 +216,8 @@ const CreateQuery = (props) => {
       let apiUrl;
       if (props.query) {
         apiUrl = `http://localhost:8080/voteme/editquery/${props.query.QueryId}`;
-        await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
+        const editPoll = await axios.put(apiUrl, bodyFormData, { headers: userInfo.header });
+        ToastMessage(editPoll.data.message, true);
       } else {
         apiUrl = "http://localhost:8080/voteme/createpoll";
         const data = await axios.post(apiUrl, bodyFormData, { headers: userInfo.header });
@@ -483,7 +491,8 @@ const CreateQuery = (props) => {
                   type="checkbox"
                   name="CategoryId"
                   value={e._id}
-                  onChange={(e) => selectCategory(e)}
+                  defaultChecked={queryCategory.find((el) => el == e._id)}
+                  onClick={(e) => selectCategory(e)}
                 />
                 <label>
                   <span>{e.CategoryName}</span>

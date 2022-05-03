@@ -299,6 +299,62 @@ const CreateQuery = (props) => {
                 {OptionTwoError}
               </span>
             ) : null}
+            {props.query && OptionThree && 
+            <div className="option-textarea-inner">
+            <div className="text-area-field">
+              <textarea
+                className="full-height"
+                placeholder="Option C."
+                maxLength="100"
+                name="OptionThree"
+                value={OptionThree}
+                onChange={(e) => onInputChange(e)}
+              ></textarea>
+            </div>
+          </div>
+            }
+             {props.query && OptionFour && 
+            <div className="option-textarea-inner">
+            <div className="text-area-field">
+              <textarea
+                className="full-height"
+                placeholder="Option D."
+                maxLength="100"
+                name="OptionFour"
+                value={OptionFour}
+                onChange={(e) => onInputChange(e)}
+              ></textarea>
+            </div>
+          </div>
+            }
+             {props.query && OptionFive && 
+            <div className="option-textarea-inner">
+            <div className="text-area-field">
+              <textarea
+                className="full-height"
+                placeholder="Option E."
+                maxLength="100"
+                name="OptionFive"
+                value={OptionFive}
+                onChange={(e) => onInputChange(e)}
+              ></textarea>
+            </div>
+          </div>
+            }
+             {props.query && OptionSix && 
+            <div className="option-textarea-inner">
+            <div className="text-area-field">
+              <textarea
+                className="full-height"
+                placeholder="Option F."
+                maxLength="100"
+                name="OptionSix"
+                value={OptionSix}
+                onChange={(e) => onInputChange(e)}
+              ></textarea>
+            </div>
+          </div>
+            }
             {fields.length <= 4 &&
               fields.map((field, id) => (
                 <div className="option-textarea-inner" key={`${field}-${id}`}>

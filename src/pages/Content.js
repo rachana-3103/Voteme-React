@@ -19,7 +19,7 @@ import QueryTop10 from './QueryTop10';
 import QueryPopular from './QueryPopular';
 
 const withHeader = ['/my-profile', '/home', '/queryDetails', '/queryEndDetails', '/my-query', '/terms-condition',
-    '/help', '/createQuery', '/queryAll', '/queryRecent', '/queryTop10', '/queryPopular'];
+    '/help', '/createQuery', '/all', '/recent', '/top10', '/popular'];
 
 const Content = () => {
     const location = useLocation();
@@ -51,10 +51,10 @@ const Content = () => {
                                 <Route exact path='/queryDetails' element={<QueryDetails data={data} setData={setData} />} />
                                 <Route exact path='/queryEndDetails' element={<QueryEndDetails data={data} />} />
                                 {/* <Route exact path="/queryAll" element={<AllQuery />} /> */}
-                                <Route exact path="/queryAll" element={<QueryAll />} />
-                                <Route exact path="/queryRecent" element={<QueryRecent />} />
-                                <Route exact path="/queryTop10" element={<QueryTop10 />} />
-                                <Route exact path="/queryPopular" element={<QueryPopular />} />
+                                <Route exact path="/all" element={<QueryAll />} />
+                                <Route exact path="/recent" element={<QueryRecent />} />
+                                <Route exact path="/top10" element={<QueryTop10 />} />
+                                <Route exact path="/popular" element={<QueryPopular />} />
                                 <Route exact path='/home' element={<Home QueryData={QueryData} CategoryShowHide={CategoryShowHide} />} />
                                 <Route exact path='/my-query' element={<MyQuery />} />
                                 <Route exact path='/selectCategory' element={<SelectCategory />} />

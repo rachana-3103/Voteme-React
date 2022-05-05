@@ -1,15 +1,12 @@
 import Layout from '../component/Layout'
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ToastMessage from '../helper/ToastMessage';
 
 const Index = (props) => {
     useEffect(() => {
         localStorage.clear();
     }, []);
-    if (props.data === 'logout') {
-        ToastMessage('Logout Sucessfully!', true);
-    }
+
     return (
         <Layout>
             <div>
@@ -17,7 +14,7 @@ const Index = (props) => {
                     <div className="container">
                         <div className="header-inner">
                             <div className="logo">
-                                <a href="!#"><img src="assets/images/logo.png" alt="" /></a>
+                                <a href=""><img src="assets/images/logo.png" alt="" /></a>
                             </div>
                             <div className="nav-menu">
                                 <div className="toggle">
@@ -26,7 +23,7 @@ const Index = (props) => {
                                     <div className="three"></div>
                                 </div>
                                 <ul className="nav">
-                                    <li className="active"><a href="!#">Home</a></li>
+                                    <li><a href="">Home</a></li>
                                     <li><a href="#about-us">About</a></li>
                                     <li><a href="#how-it-works">How it works</a></li>
                                     <li><a href="#get-in-touch">Contact Us</a></li>
@@ -47,7 +44,7 @@ const Index = (props) => {
                             <div className="slider-text">
                                 <h1 className="big-title">Vote For Best <br></br> and accurate...<br></br> ask your <span className="orange-text"> Queries</span></h1>
                                 <div className="slider-small-text">Solve your any type of queries by asking and also help others by voting their queries</div>
-                                <div className="slider-btn"><a routerLink="./queries" routerLinkActive="router-link-active" href="#foo">VOTE FOR BEST<span className="tick-icon"><img src="assets/images/tick.svg" alt="" /></span></a></div>
+                                <div className="slider-btn"><a routerLink="./queries" routerLinkActive="router-link-active" href="">VOTE FOR BEST<span className="tick-icon"><img src="assets/images/tick.svg" alt="" /></span></a></div>
                             </div>
                         </div>
                     </div>

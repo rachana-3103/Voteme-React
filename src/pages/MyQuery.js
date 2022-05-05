@@ -105,16 +105,34 @@ const MyQuery = () => {
                           <img src="assets/images/view-outline.svg" alt="" /> {queryData.TotalViews}
                         </span>
                       </div>
-                      <div className="poll-end-time">
-                        Pole End Time {queryData.EndDate}
-                      </div>
+                      {queryData.EndDate >=
+                        moment().format("DD/MM/YYYY") && (
+                          <div className="poll-end-time">
+                            Poll End Date {queryData.EndDate}
+                          </div>
+                        )}
+
+                      {queryData.EndDate <
+                        moment().format("DD/MM/YYYY") && (
+                          <div class="poll-end-time poll-ended">
+                            Poll Ended
+                          </div>
+                        )}
                       <div className="query-cta-btns">
-                        <span className="edit" onClick={() => editQuery(queryData._id)}>
-                          <img src="assets/images/edit.svg" alt="" />
-                        </span>
-                        <span className="delete" onClick={() => deleteQuery(queryData._id)}>
-                          <img src="assets/images/delete.svg" alt="" />
-                        </span>
+                        {queryData.EndDate >= moment().format("DD/MM/YYYY") && (
+                          <div>
+                            <span className="edit" onClick={() => editQuery(queryData._id)}>
+                              <img src="assets/images/edit.svg" alt="" />
+                            </span>
+                            <span className="delete" onClick={() => deleteQuery(queryData._id)}>
+                              <img src="assets/images/delete.svg" alt="" />
+                            </span>
+                          </div>
+                        )}
+                        {queryData.EndDate < moment().format("DD/MM/YYYY") && (
+                          <span className="delete" onClick={() => deleteQuery(queryData._id)}>
+                            <img src="assets/images/delete.svg" alt="" />
+                          </span>)}
                       </div>
                     </div>
                   </div>

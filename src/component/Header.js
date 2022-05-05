@@ -4,12 +4,7 @@ import { AuthData } from "../helper/AuthData";
 import { Link } from 'react-router-dom';
 
 const Header = () => {
-    const [user, setUser] = useState({
-        FirstName: "",
-        LastName: "",
-        Image: "",
-        Email: "",
-    });
+    const [user, setUser] = useState({});
     const { FirstName, LastName, Image, Email } = user;
     useEffect(() => {
         loadUser();
@@ -28,7 +23,7 @@ const Header = () => {
                 <div className="container">
                     <div className="header-inner">
                         <div className="logo">
-                            <a href="/abc"><img src="assets/images/logo.png" alt="" /></a>
+                            <a href="/home"><img src="assets/images/logo.png" alt="" /></a>
                         </div>
                         <div className="nav-menu">
                             <div className="toggle">
@@ -37,11 +32,10 @@ const Header = () => {
                                 <div className="three"></div>
                             </div>
                             <ul className="nav">
-                                <li
-                                //  className="active"
-                                ><a href="/">Home</a></li>
+                                {/* <li className="active">
+                                    <a href="/">Home</a></li>
                                 <li><a href="/">About</a></li>
-                                <li><a href="/">Contact Us</a></li>
+                                <li><a href="/">Contact Us</a></li> */}
                             </ul>
                         </div>
                         <div className="header-right-block">
@@ -50,11 +44,11 @@ const Header = () => {
                                 <Link to="/createQuery"> <button type="button">Ask your query</button></Link>
                             </div>
                             <div className="header-profile">
-                                <span className="header-profile-img"><img src={Image} alt="" /></span>
+                                <span className="header-profile-img"><img src={Image} alt="" />
                                 <div className="profile-dw-inner">
                                     <div className="dw-img-block flex-box">
                                         <img src={Image} alt="" />
-                                        <div className="user-name">{FirstName} {LastName} <span className="user-email"><a href="/abc">{Email}</a></span></div>
+                                        <div className="user-name">{FirstName} {LastName} <span className="user-email"><a href="/home">{Email}</a></span></div>
                                     </div>
                                     <ul className="dw-list">
                                         <li>Notifications
@@ -65,11 +59,12 @@ const Header = () => {
                                                 </label>
                                             </span>
                                         </li>
-                                        <li><a href="/abc">Language</a></li>
-                                        <li><a href="/abc">Settings</a></li>
-                                        <li><a href="/">Logout</a></li>
+                                        <li><a href="/home">Language</a></li>
+                                        <li><a href="/home">Settings</a></li>
+                                        <li><a href="/logout">Logout</a></li>
                                     </ul>
                                 </div>
+                                </span>
                             </div>
                         </div>
                     </div>

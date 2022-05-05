@@ -170,7 +170,7 @@ const Home = (props) => {
                                   </div>
                                 )}
                               {!queryData.IsVoted &&
-                                queryData.EndDate >
+                                queryData.EndDate >=
                                 moment().format("DD/MM/YYYY") && (
                                   <div className="submit-btn">
                                     <button
@@ -251,7 +251,7 @@ const Home = (props) => {
                                 </span>
                               </div>
                             </div>
-                            {queryData.EndDate >
+                            {queryData.EndDate >=
                               moment().format("DD/MM/YYYY") && (
                                 <div className="poll-end-time">
                                   Poll End Date {queryData.EndDate}
